@@ -2,127 +2,145 @@ import React, { useState } from "react";
 import emailjs from "@emailjs/browser";
 
 const Footer: React.FC = () => {
-
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleSubmit = () => {
+  const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+  const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+  const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+  const handleSubmit = async () => {
     if (!email || !message) {
       alert("Please fill all fields");
       return;
     }
 
-    emailjs.send(
-      "service_f44xtjm",
-      "template_xlypmix",
-      {
-        user_email: email,
-        message: message,
-      },
-      "cJf6dwcZ25b3FGoFv"
-    )
-    .then(() => {
-      alert("Message sent successfully 🚀");
+    if (!serviceId || !templateId || !publicKey) {
+      alert("Email service is not configured. Please set VITE_EMAILJS_* variables.");
+      return;
+    }
+
+    try {
+      await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          user_email: email,
+          message,
+        },
+        publicKey
+      );
+
+      alert("Message sent successfully");
       setEmail("");
       setMessage("");
-    })
-    .catch((error) => {
+    } catch (error) {
       console.error(error);
-      alert("Failed to send message ❌");
-    });
+      alert("Failed to send message");
+    }
   };
 
   return (
-    
+    <footer id="footer" style={styles.footer}>
+      <div style={styles.container}>
+        <div style={styles.content}>
+          <div style={styles.newsletter}>
+            <div style={styles.logo}>
+              <span style={styles.logoText}>Inferno</span>
+            </div>
 
+            <p style={styles.newsletterText}>
+              Tell us about your project - we will get back to you.
+            </p>
 
-  <footer id="footer" style={styles.footer}>
-    <div style={styles.container}>
-      <div style={styles.content}>
-        {/* Newsletter */}
-        <div style={styles.newsletter}>
-  <div style={styles.logo}>
-    <span style={styles.logoText}>Inferno</span>
-  </div>
+            <div style={styles.actions}>
+              <input
+                type="email"
+                placeholder="Your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                style={styles.input}
+              />
 
-  <p style={styles.newsletterText}>
-    Tell us about your project — we’ll get back to you.
-  </p>
+              <textarea
+                placeholder="Describe your project..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                style={styles.textarea}
+              />
 
-  <div style={styles.actions}>
-    <input
-      type="email"
-      placeholder="Your email"
-      value={email}
-      onChange={(e) => setEmail(e.target.value)}
-      style={styles.input}
-    />
-
-    <textarea
-      placeholder="Describe your project..."
-      value={message}
-      onChange={(e) => setMessage(e.target.value)}
-      style={styles.textarea}
-    />
-
-    <button onClick={handleSubmit} style={styles.btnSubscribe}>
-      Send
-    </button>
-  </div>
-</div>
-        {/* Links */}
-        <div style={styles.links}>
-          <div style={styles.linkCol}>
-            <span style={styles.colTitle}>Services</span>
-            <div style={styles.linkList}>
-              {["Web development", "Mobile apps", "UI/UX design", "Digital transformation", "Case studies"].map((l, i) => (
-                <a key={i} href="#" style={styles.link}>{l}</a>
-              ))}
+              <button onClick={handleSubmit} style={styles.btnSubscribe}>
+                Send
+              </button>
             </div>
           </div>
-          <div style={styles.linkCol}>
-            <span style={styles.colTitle}>Company</span>
-            <div style={styles.linkList}>
-              {["About us", "Our team","Contact"].map((l, i) => (
-                <a key={i} href="#" style={styles.link}>{l}</a>
-              ))}
+
+          <div style={styles.links}>
+            <div style={styles.linkCol}>
+              <span style={styles.colTitle}>Services</span>
+              <div style={styles.linkList}>
+                {[
+                  "Web development",
+                  "Mobile apps",
+                  "UI/UX design",
+                  "Digital transformation",
+                  "Case studies",
+                ].map((l, i) => (
+                  <a key={i} href="#" style={styles.link}>
+                    {l}
+                  </a>
+                ))}
+              </div>
+            </div>
+            <div style={styles.linkCol}>
+              <span style={styles.colTitle}>Company</span>
+              <div style={styles.linkList}>
+                {["About us", "Our team", "Contact"].map((l, i) => (
+                  <a key={i} href="#" style={styles.link}>
+                    {l}
+                  </a>
+                ))}
+              </div>
+            </div>
+            <div style={styles.linkCol}>
+              <span style={styles.colTitle}>Follow us</span>
+              <div style={styles.linkList}>
+                {[
+                  { icon: "[]", name: "Instagram" },
+                  { icon: "w", name: "Whatsapp" },
+                  { icon: "in", name: "LinkedIn" },
+                ].map((s, i) => (
+                  <a key={i} href="#" style={styles.socialLink}>
+                    <span style={styles.socialIcon}>{s.icon}</span>
+                    <span style={styles.link}>{s.name}</span>
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
-          <div style={styles.linkCol}>
-            <span style={styles.colTitle}>Follow us</span>
-            <div style={styles.linkList}>
-              {[
-                { icon: "◻", name: "Instagram" },
-                {name:"Whatsapp", icon: "w"},
-                { icon: "in", name: "LinkedIn" },
-              ].map((s, i) => (
-                <a key={i} href="#" style={styles.socialLink}>
-                  <span style={styles.socialIcon}>{s.icon}</span>
-                  <span style={styles.link}>{s.name}</span>
-                </a>
-              ))}
+        </div>
+
+        <div style={styles.credits}>
+          <div style={styles.divider} />
+          <div style={styles.creditRow}>
+            <span style={styles.copyright}>
+              (c) Inferno IT Solutions. All rights reserved.
+            </span>
+            <div style={styles.footerLinks}>
+              {["Privacy policy", "Terms of service", "Cookie settings"].map(
+                (l, i) => (
+                  <a key={i} href="#" style={styles.footerLink}>
+                    {l}
+                  </a>
+                )
+              )}
             </div>
           </div>
         </div>
       </div>
-
-      {/* Credits */}
-      <div style={styles.credits}>
-        <div style={styles.divider} />
-        <div style={styles.creditRow}>
-          <span style={styles.copyright}>© Inferno IT Solutions. All rights reserved.</span>
-          <div style={styles.footerLinks}>
-            {["Privacy policy", "Terms of service", "Cookie settings"].map((l, i) => (
-              <a key={i} href="#" style={styles.footerLink}>{l}</a>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  </footer>
-    );
+    </footer>
+  );
 };
-
 
 const styles: Record<string, React.CSSProperties> = {
   footer: {
@@ -267,17 +285,17 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 16,
   },
   textarea: {
-  background: "transparent",
-  border: "1px solid rgba(255,255,255,0.3)",
-  padding: "10px",
-  fontFamily: "'Inter', sans-serif",
-  fontSize: 16,
-  color: "#FFFFFF",
-  borderRadius: 8,
-  outline: "none",
-  minHeight: 80,
-  resize: "none",
-},
+    background: "transparent",
+    border: "1px solid rgba(255,255,255,0.3)",
+    padding: "10px",
+    fontFamily: "'Inter', sans-serif",
+    fontSize: 16,
+    color: "#FFFFFF",
+    borderRadius: 8,
+    outline: "none",
+    minHeight: 80,
+    resize: "none",
+  },
   copyright: {
     fontFamily: "'Inter', sans-serif",
     fontWeight: 400,

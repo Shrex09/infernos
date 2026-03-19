@@ -23,19 +23,6 @@ const features = [
   },
 ];
 
-const skills = [
-  "Java",
-  "Python",
-  "C/C++",
-  "React.js",
-  "Node.js",
-  "AI/ML",
-  "PHP",
-  "Oracle",
-  "TypeScript",
-  "MongoDB",
-];
-
 
 // 🔥 Tilt Hook
 const useTilt = () => {
