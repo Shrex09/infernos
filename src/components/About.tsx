@@ -34,7 +34,14 @@ const About: React.FC = () => (
           </div>
           <div style={styles.actions}>
             <a href="#" style={styles.btnOutline}>Learn more</a>
-            <a href="#" style={styles.btnLink}>
+            <a 
+              href="#footer" 
+              style={styles.btnLink}
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('footer')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
               Contact <span style={styles.arrow}>›</span>
             </a>
           </div>

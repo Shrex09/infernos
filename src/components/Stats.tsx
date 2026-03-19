@@ -6,9 +6,9 @@ interface Stat {
 }
 
 const stats: Stat[] = [
-  { value: "150+", label: "Projects completed" },
-  { value: "98%", label: "Client satisfaction" },
-  { value: "8+", label: "Years in business" },
+  { value: "10+", label: "Projects completed" },
+  { value: "96%", label: "Client satisfaction" },
+  { value: "2+", label: "Years in business" },
 ];
 
 const Stats: React.FC = () => (

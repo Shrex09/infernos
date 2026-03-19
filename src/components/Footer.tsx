@@ -1,32 +1,75 @@
-import React from "react";
+import React, { useState } from "react";
+import emailjs from "@emailjs/browser";
 
-const Footer: React.FC = () => (
-  <footer style={styles.footer}>
+const Footer: React.FC = () => {
+
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = () => {
+    if (!email || !message) {
+      alert("Please fill all fields");
+      return;
+    }
+
+    emailjs.send(
+      "service_f44xtjm",
+      "template_xlypmix",
+      {
+        user_email: email,
+        message: message,
+      },
+      "cJf6dwcZ25b3FGoFv"
+    )
+    .then(() => {
+      alert("Message sent successfully 🚀");
+      setEmail("");
+      setMessage("");
+    })
+    .catch((error) => {
+      console.error(error);
+      alert("Failed to send message ❌");
+    });
+  };
+
+  return (
+    
+
+
+  <footer id="footer" style={styles.footer}>
     <div style={styles.container}>
       <div style={styles.content}>
         {/* Newsletter */}
         <div style={styles.newsletter}>
-          <div style={styles.logo}>
-            <span style={styles.logoText}>Logo</span>
-          </div>
-          <p style={styles.newsletterText}>
-            Stay informed on new solutions and industry insights.
-          </p>
-          <div style={styles.actions}>
-            <div style={styles.form}>
-              <input
-                type="email"
-                placeholder="Enter your email"
-                style={styles.input}
-              />
-              <a href="#" style={styles.btnSubscribe}>Subscribe</a>
-            </div>
-            <p style={styles.disclaimer}>
-              You agree to our Privacy Policy and consent to updates.
-            </p>
-          </div>
-        </div>
+  <div style={styles.logo}>
+    <span style={styles.logoText}>Inferno</span>
+  </div>
 
+  <p style={styles.newsletterText}>
+    Tell us about your project — we’ll get back to you.
+  </p>
+
+  <div style={styles.actions}>
+    <input
+      type="email"
+      placeholder="Your email"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+      style={styles.input}
+    />
+
+    <textarea
+      placeholder="Describe your project..."
+      value={message}
+      onChange={(e) => setMessage(e.target.value)}
+      style={styles.textarea}
+    />
+
+    <button onClick={handleSubmit} style={styles.btnSubscribe}>
+      Send
+    </button>
+  </div>
+</div>
         {/* Links */}
         <div style={styles.links}>
           <div style={styles.linkCol}>
@@ -40,7 +83,7 @@ const Footer: React.FC = () => (
           <div style={styles.linkCol}>
             <span style={styles.colTitle}>Company</span>
             <div style={styles.linkList}>
-              {["About us", "Our team", "Careers", "Blog", "Contact"].map((l, i) => (
+              {["About us", "Our team","Contact"].map((l, i) => (
                 <a key={i} href="#" style={styles.link}>{l}</a>
               ))}
             </div>
@@ -49,11 +92,9 @@ const Footer: React.FC = () => (
             <span style={styles.colTitle}>Follow us</span>
             <div style={styles.linkList}>
               {[
-                { icon: "f", name: "Facebook" },
                 { icon: "◻", name: "Instagram" },
-                { icon: "✕", name: "X" },
+                {name:"Whatsapp", icon: "w"},
                 { icon: "in", name: "LinkedIn" },
-                { icon: "▶", name: "YouTube" },
               ].map((s, i) => (
                 <a key={i} href="#" style={styles.socialLink}>
                   <span style={styles.socialIcon}>{s.icon}</span>
@@ -69,7 +110,7 @@ const Footer: React.FC = () => (
       <div style={styles.credits}>
         <div style={styles.divider} />
         <div style={styles.creditRow}>
-          <span style={styles.copyright}>© 2025 Freelance IT Solutions. All rights reserved.</span>
+          <span style={styles.copyright}>© Inferno IT Solutions. All rights reserved.</span>
           <div style={styles.footerLinks}>
             {["Privacy policy", "Terms of service", "Cookie settings"].map((l, i) => (
               <a key={i} href="#" style={styles.footerLink}>{l}</a>
@@ -79,7 +120,9 @@ const Footer: React.FC = () => (
       </div>
     </div>
   </footer>
-);
+    );
+};
+
 
 const styles: Record<string, React.CSSProperties> = {
   footer: {
@@ -144,7 +187,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "'Inter', sans-serif",
     fontWeight: 500,
     fontSize: 18,
-    color: "#FFFFFF",
+    color: "#000000",
     padding: "6px 12px",
     border: "1px solid rgba(255,255,255,0.2)",
     borderRadius: 12,
@@ -223,6 +266,18 @@ const styles: Record<string, React.CSSProperties> = {
     flexWrap: "wrap",
     gap: 16,
   },
+  textarea: {
+  background: "transparent",
+  border: "1px solid rgba(255,255,255,0.3)",
+  padding: "10px",
+  fontFamily: "'Inter', sans-serif",
+  fontSize: 16,
+  color: "#FFFFFF",
+  borderRadius: 8,
+  outline: "none",
+  minHeight: 80,
+  resize: "none",
+},
   copyright: {
     fontFamily: "'Inter', sans-serif",
     fontWeight: 400,

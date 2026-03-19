@@ -5,26 +5,30 @@ interface Testimonial {
   name: string;
   role: string;
   company: string;
+  logo: string;
 }
 
 const testimonials: Testimonial[] = [
   {
-    quote: "They understood our vision and delivered exactly what we needed on time and within budget.",
-    name: "Sarah Brown",
-    role: "CEO, TechStart Inc.",
-    company: "Webflow",
+    quote: "The e-commerce platform for our nursery has transformed our business. Online sales have increased by 300% since launch. The team understood our needs perfectly.",
+    name: "Mayur Koli",
+    role: "Owner",
+    company: "Mayur Nursery",
+    logo: "/logos/mayur.png",
   },
   {
-    quote: "The team's attention to detail and problem-solving approach made all the difference in our project.",
-    name: "James Reid",
-    role: "Founder, Digital Ventures",
-    company: "Webflow",
+    quote: "The barcode scanning solution has streamlined our inventory management completely. The integration with our existing systems was flawless. Excellent technical skills and support.",
+    name: "Sarah Kumar",
+    role: "IT Director, MGTech Systems",
+    company: "MGTech Systems",
+    logo: "/logos/mg_logo.png",
   },
   {
-    quote: "Working with them transformed how we operate. Professional, reliable, and genuinely invested in our success.",
-    name: "Priya Mehta",
-    role: "Director, Grow Laya",
-    company: "Webflow",
+    quote: "A modern healthcare platform that redefines convenience by bringing appointments, records, and care into one intelligent system.",
+    name: "Dr.Akshay B.Pawar",
+    role: "Owner, Doctor",
+    company: "MediCore",
+    logo: "/logos/medicore.png",
   },
 ];
 
@@ -49,7 +53,11 @@ const Testimonials: React.FC = () => (
             <Stars />
             <p style={styles.quote}>"{t.quote}"</p>
             <div style={styles.avatar}>
-              <div style={styles.avatarImg} />
+              <img
+                src={t.logo}
+                alt={t.company}
+                style={styles.avatarImg}
+              />
               <div style={styles.avatarContent}>
                 <span style={styles.name}>{t.name}</span>
                 <span style={styles.role}>{t.role}</span>
@@ -125,11 +133,13 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 16,
   },
   avatarImg: {
-    width: 56,
-    height: 56,
-    borderRadius: "50%",
-    background: "linear-gradient(135deg, #2a3a4a 0%, #3a4a5a 100%)",
-  },
+  width: 66,
+  height: 66,
+  borderRadius: "50%",
+  objectFit: "cover", // 👈 important
+  background: "#fff", // optional (good for logos)
+  padding: 4, // optional spacing
+},
   avatarContent: {
     display: "flex",
     flexDirection: "column",
