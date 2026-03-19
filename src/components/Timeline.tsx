@@ -1,44 +1,120 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-interface Phase {
-  label: string;
-  date: string;
-  heading: string;
-  description: string;
-}
-
-const phases: Phase[] = [
+const phases = [
   {
     label: "One",
     date: "Phase",
     heading: "Discovery and strategy planning begins",
     description: "We listen to your goals, analyze your market, and craft the right solution.",
+    code: [
+      "// Discovery",
+      "const project = analyze({",
+      "  goals: client.goals,",
+      "  market: research(),",
+      "});",
+      "",
+      "const strategy = build(project);",
+    ],
   },
   {
     label: "Two",
     date: "Phase",
     heading: "Design and architecture setup",
     description: "Our designers create wireframes, prototypes, and a technical blueprint.",
+    code: [
+      "// Design",
+      "const design = createUI({",
+      "  wireframe: true,",
+      "  prototype: true,",
+      "});",
+      "",
+      "// UI ready",
+    ],
   },
   {
     label: "Three",
     date: "Phase",
     heading: "Development and integration",
     description: "Our engineers build the solution using modern, scalable technologies.",
+    code: [
+      "// Development",
+      "const app = new App({",
+      "  frontend: 'React',",
+      "  backend: 'Node',",
+      "});",
+      "",
+      "app.deploy();",
+    ],
   },
   {
     label: "Four",
     date: "Phase",
     heading: "Testing and quality assurance",
     description: "Rigorous testing to ensure performance, security, and reliability.",
+    code: [
+      "// Testing",
+      "runTests({",
+      "  unit: true,",
+      "  e2e: true,",
+      "});",
+      "",
+      "// Passed ✓",
+    ],
   },
   {
     label: "Five",
     date: "Phase",
     heading: "Launch and ongoing support",
     description: "We deploy your product and provide continuous maintenance and updates.",
+    code: [
+      "// Launch",
+      "deploy({",
+      "  env: 'production',",
+      "});",
+      "",
+      "// Live 🚀",
+    ],
   },
 ];
+
+const LiveCode: React.FC<{ lines: string[] }> = ({ lines }) => {
+  const [visible, setVisible] = useState<string[]>([]);
+
+  useEffect(() => {
+    setVisible([]);
+    let i = 0;
+
+    const interval = setInterval(() => {
+      if (i < lines.length) {
+        setVisible((prev) => [...prev, lines[i]]);
+        i++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [lines]);
+
+  return (
+    <div style={codeStyles.wrap}>
+      <div style={codeStyles.bar}>
+        <span style={codeStyles.dotRed}></span>
+        <span style={codeStyles.dotYellow}></span>
+        <span style={codeStyles.dotGreen}></span>
+      </div>
+
+      <div style={codeStyles.code}>
+        {visible.map((line, i) => (
+          <div key={i}>
+            <span style={codeStyles.lineNum}>{i + 1}</span>
+            <span>{line}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const Timeline: React.FC = () => {
   const [active, setActive] = useState(0);
@@ -72,7 +148,9 @@ const Timeline: React.FC = () => {
             </div>
           </div>
           <div style={styles.imageSide}>
-            <div style={styles.placeholderImg} />
+          <div style={styles.placeholderImg}>
+  <LiveCode lines={current.code} />
+</div>
           </div>
         </div>
 
@@ -107,6 +185,36 @@ const Timeline: React.FC = () => {
   );
 };
 
+const codeStyles: Record<string, React.CSSProperties> = {
+  wrap: {
+    width: "100%",
+    height: "100%",
+    background: "#0d1117",
+    borderRadius: 16,
+    overflow: "hidden",
+    display: "flex",
+    flexDirection: "column",
+  },
+  bar: {
+    display: "flex",
+    gap: 6,
+    padding: 10,
+    background: "#161b22",
+  },
+  dotRed: { width: 10, height: 10, borderRadius: "50%", background: "#ff5f57" },
+  dotYellow: { width: 10, height: 10, borderRadius: "50%", background: "#febc2e" },
+  dotGreen: { width: 10, height: 10, borderRadius: "50%", background: "#28c840" },
+  code: {
+    padding: 16,
+    fontFamily: "monospace",
+    fontSize: 13,
+    color: "#e6edf3",
+  },
+  lineNum: {
+    marginRight: 10,
+    color: "gray",
+  },
+};
 const styles: Record<string, React.CSSProperties> = {
   section: {
     background: "#000B0D",
