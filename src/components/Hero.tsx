@@ -29,10 +29,6 @@ const Hero: React.FC = () => (
             We build digital products that transform businesses. From web apps to mobile solutions, we create technology that works.
           </p>
         </div>
-        <div style={styles.actions}>
-          <a href="#" style={styles.btnPrimary}>Start</a>
-          <a href="#" style={styles.btnOutline}>Learn</a>
-        </div>
       </div>
     </div>
   </section>

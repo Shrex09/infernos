@@ -53,8 +53,16 @@ const Services: React.FC = () => (
         ))}
       </div>
       <div style={styles.actions}>
-        <a href="#" style={styles.btnOutline}>Explore</a>
-        <a href="#" style={styles.btnLink}>More › </a>
+        <a 
+          href="#cta" 
+          style={styles.btnOutline}
+          onClick={(e) => {
+            e.preventDefault();
+            document.getElementById('cta')?.scrollIntoView({ behavior: 'smooth' });
+          }}
+        >
+          Explore
+        </a>
       </div>
     </div>
   </section>

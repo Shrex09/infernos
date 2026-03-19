@@ -135,7 +135,16 @@ const Timeline: React.FC = () => {
             </div>
             <div style={styles.actions}>
               <a href="#" style={styles.btnOutline}>Learn</a>
-              <a href="#" style={styles.btnLink}>Contact ›</a>
+              <a 
+                href="#footer" 
+                style={styles.btnLink}
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById('footer')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
+                Contact ›
+              </a>
             </div>
           </div>
           <div style={styles.imageSide}>
