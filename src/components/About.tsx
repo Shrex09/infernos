@@ -520,7 +520,7 @@ const About: React.FC = () => {
   };
 
   return (
-    <section style={styles.section}>
+    <section id="about" style={styles.section}>
       <div style={styles.container}>
         <div style={styles.component}>
           {/* ── LEFT: Content ── */}
@@ -547,7 +547,14 @@ const About: React.FC = () => {
               </ul>
             </div>
             <div style={styles.actions}>
-              <a href="#" style={styles.btnLink}>
+              <a 
+                href="#footer" 
+                style={styles.btnLink}
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById('footer')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
                 Contact <span style={styles.arrow}>›</span>
               </a>
             </div>

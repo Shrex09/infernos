@@ -30,7 +30,7 @@ const services: Service[] = [
 ];
 
 const Services: React.FC = () => (
-  <section style={styles.section}>
+  <section id="services" style={styles.section}>
     <div style={styles.container}>
       <div style={styles.sectionTitle}>
         <span style={styles.tagline}>Services</span>
