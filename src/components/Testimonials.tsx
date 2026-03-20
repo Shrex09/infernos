@@ -14,21 +14,21 @@ const testimonials: Testimonial[] = [
     name: "Mayur Koli",
     role: "Owner",
     company: "Mayur Nursery",
-    logo: "/logos/mayur.png",
+    logo: "/mayur.png",
   },
   {
     quote: "The barcode scanning solution has streamlined our inventory management completely. The integration with our existing systems was flawless. Excellent technical skills and support.",
     name: "Sarah Kumar",
     role: "IT Director, MGTech Systems",
     company: "MGTech Systems",
-    logo: "/logos/mg_logo.png",
+    logo: "/mg_logo.png",
   },
   {
     quote: "A modern healthcare platform that redefines convenience by bringing appointments, records, and care into one intelligent system.",
     name: "Dr.Akshay B.Pawar",
     role: "Owner, Doctor",
     company: "MediCore",
-    logo: "/logos/medicore.png",
+    logo: "/medicore.png",
   },
 ];
 
