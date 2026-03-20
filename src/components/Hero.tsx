@@ -11,7 +11,7 @@ const Hero: React.FC = () => (
       playsInline
       style={styles.video}
     >
-      <source src="/video/herobg12.mp4" type="video/mp4" />
+      <source src="/herobg12.mp4" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
 
