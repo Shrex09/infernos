@@ -121,7 +121,7 @@ const LogoStrip: React.FC = () => {
   }, []);
 
   return (
-    <section style={styles.section}>
+    <section id="team" style={styles.section}>
       <div style={styles.container}>
 
         {/* Heading */}

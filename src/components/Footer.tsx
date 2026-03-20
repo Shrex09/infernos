@@ -86,7 +86,7 @@ const Footer: React.FC = () => {
                   "Digital transformation",
                   "Case studies",
                 ].map((l, i) => (
-                  <a key={i} href="#" style={styles.link}>
+                  <a key={i} style={styles.link}>
                     {l}
                   </a>
                 ))}
@@ -95,9 +95,21 @@ const Footer: React.FC = () => {
             <div style={styles.linkCol}>
               <span style={styles.colTitle}>Company</span>
               <div style={styles.linkList}>
-                {["About us", "Our team", "Contact"].map((l, i) => (
-                  <a key={i} href="#" style={styles.link}>
-                    {l}
+                {[
+                  { label: "About us", id: "about" },
+                  { label: "Our team", id: "team" },
+                  { label: "Contact", id: "footer" }
+                ].map((l, i) => (
+                  <a 
+                    key={i} 
+                    href={`#${l.id}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById(l.id)?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    style={styles.link}
+                  >
+                    {l.label}
                   </a>
                 ))}
               </div>
@@ -106,11 +118,11 @@ const Footer: React.FC = () => {
               <span style={styles.colTitle}>Follow us</span>
               <div style={styles.linkList}>
                 {[
-                  { icon: "[]", name: "Instagram" },
-                  { icon: "w", name: "Whatsapp" },
-                  { icon: "in", name: "LinkedIn" },
+                  { icon: "[]", name: "Instagram", href: "https://instagram.com/connect.inferno" },
+                  { icon: "w", name: "Whatsapp", href: "https://wa.me/9021191174" },
+                  { icon: "in", name: "LinkedIn", href: "https://linkedin.com/company/Infernos Solutions" },
                 ].map((s, i) => (
-                  <a key={i} href="#" style={styles.socialLink}>
+                  <a key={i} href={s.href} target="_blank" rel="noopener noreferrer" style={styles.socialLink}>
                     <span style={styles.socialIcon}>{s.icon}</span>
                     <span style={styles.link}>{s.name}</span>
                   </a>
@@ -126,15 +138,9 @@ const Footer: React.FC = () => {
             <span style={styles.copyright}>
               (c) Inferno IT Solutions. All rights reserved.
             </span>
-            <div style={styles.footerLinks}>
-              {["Privacy policy", "Terms of service", "Cookie settings"].map(
-                (l, i) => (
-                  <a key={i} href="#" style={styles.footerLink}>
-                    {l}
-                  </a>
-                )
-              )}
-            </div>
+            <a href="mailto:connect.inferno@gmail.com" style={{...styles.copyright, textDecoration: 'none', cursor: 'pointer'}}>
+              connect.inferno@gmail.com
+            </a>
           </div>
         </div>
       </div>

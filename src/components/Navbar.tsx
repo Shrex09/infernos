@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 const navLinks = [
   { label: "About",     id: "about" },
   { label: "Services",  id: "services" },
-  { label: "Portfolio", id: "portfolio" },
+  { label: "Portfolio", id: "cta" },
 ];
 
 const Navbar: React.FC = () => {
@@ -97,7 +97,7 @@ const Navbar: React.FC = () => {
           <div style={styles.actions}>
             <button
               style={styles.ctaBtn}
-              onClick={() => scrollTo("contact")}
+              onClick={() => scrollTo("footer")}
               onMouseEnter={(e) => {
                 (e.currentTarget as HTMLButtonElement).style.background = "#1a6fff";
                 (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
@@ -174,7 +174,7 @@ const Navbar: React.FC = () => {
             transitionDelay: menuOpen ? "150ms" : "0ms",
             opacity: menuOpen ? 1 : 0,
           }}
-          onClick={() => scrollTo("contact")}
+          onClick={() => scrollTo("footer")}
         >
           Get started →
         </button>
