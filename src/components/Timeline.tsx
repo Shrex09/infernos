@@ -302,7 +302,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   placeholderImg: {
     width: "100%",
-    height: 600,
+    height: 400,
     background: "linear-gradient(135deg, #1a2a3a 0%, #2a3a4a 100%)",
     borderRadius: 16,
   },
