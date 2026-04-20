@@ -18,10 +18,10 @@ const App: React.FC = () => {
       <LogoStrip />
       <About />
       <Services />
+      <CTA />
       <Stats />
       <Timeline />
       <Testimonials />
-      <CTA />
       <Footer />
     </div>
   );

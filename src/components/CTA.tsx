@@ -2,16 +2,52 @@ import React, { useState, useEffect } from "react";
 
 const projects = [
   {
+    title: "Prerna Sarees",
+    desc: "An elegant and user-friendly e-commerce website for sarees, showcasing a wide collection with seamless browsing, smooth navigation, and a visually appealing shopping experience.",
+    video: "/prernasarees.mp4",
+    link: "https://prernasaree.com/",
+    features: [
+      "Beautiful product catalog with high-quality visuals",
+      "Responsive design for smooth shopping across devices",
+      "Easy navigation with category-based browsing",
+      "Optimized performance for fast and seamless user experience"
+    ],
+  },
+  {
+    title: "Shubharambh Events",
+    desc: "A professional and visually captivating event management website showcasing services, past events, and seamless client engagement for memorable experiences.",
+    video: "/shubharambh.mp4",
+    link: "https://www.shubharambhevents.co.in/",
+    features: [
+      "Elegant service showcase with rich visual content",
+      "Responsive design for smooth viewing across all devices",
+      "Clear navigation highlighting event categories and offerings",
+      "Engaging layout optimized for client inquiries and conversions"
+    ],
+  },
+  {
+    title: "Muscle Build Nutrition",
+    desc: "A clean and performance-focused e-commerce website for fitness supplements, designed to deliver a smooth shopping experience with clear product presentation and strong brand appeal.",
+    video: "/mb.mp4",
+    link: "https://www.musclebuildnutrition.co.in/",
+    features: [
+      "Structured product catalog with detailed supplement information",
+      "Responsive design optimized for mobile and desktop users",
+      "Fast and seamless browsing experience for quick purchases",
+      "Clear navigation for categories, products, and customer engagement"
+    ],
+  },
+  {
     title: "Portfolio",
     desc: "A modern, visually engaging developer portfolio showcasing innovative projects, clean UI design, and interactive user experiences.",
     video: "/portfolio.mp4",
     features: [
-  "Interactive project showcase with video & image previews",
-  "Responsive design optimized for all devices",
-  "Modern UI with smooth animations and hover effects",
-  "Dynamic and scalable component-based architecture"
-],
-link: "https://amit-lad-portfolio-dev.vercel.app/",
+      "Interactive project showcase with video & image previews",
+      "Responsive design optimized for all devices",
+      "Modern UI with smooth animations and hover effects",
+      "Dynamic and scalable component-based architecture"
+    ],
+    link: "https://amit-lad-portfolio-dev.vercel.app/",
   },
   {
     title: "Mayur Nursery",
@@ -24,15 +60,15 @@ link: "https://amit-lad-portfolio-dev.vercel.app/",
     title: "MediCore",
     desc: "This project stands out as a complete digital healthcare ecosystem—efficient, user-centric, and built for real-world impact.",
     features: [
-  "Patient dashboard",
-  "Appointment booking & management",
-  "Doctor search & discovery",
-  "Digital health records",
-  "Prescription tracking",
-  "Smart notifications & reminders",
-  "Health insights & analytics",
-],
-    img: ["/m1.jpeg","/m2.jpeg","/m3.jpeg","/m4.jpeg","/m5.jpeg"],
+      "Patient dashboard",
+      "Appointment booking & management",
+      "Doctor search & discovery",
+      "Digital health records",
+      "Prescription tracking",
+      "Smart notifications & reminders",
+      "Health insights & analytics",
+    ],
+    img: ["/m1.jpeg", "/m2.jpeg", "/m3.jpeg", "/m4.jpeg", "/m5.jpeg"],
   },
 ];
 
@@ -49,30 +85,31 @@ const CTA: React.FC = () => {
   }, []);
 
   useEffect(() => {
-  const currentProject = projects[index];
+    const currentProject = projects[index];
 
-  if (Array.isArray(currentProject.img)) {
-  const images = currentProject.img; // 👈 store safely
+    if (Array.isArray(currentProject.img)) {
+      const images = currentProject.img; // 👈 store safely
 
-  const interval = setInterval(() => {
-    setSlideIndex((prev) => (prev + 1) % images.length);
-  }, 2000);
+      const interval = setInterval(() => {
+        setSlideIndex((prev) => (prev + 1) % images.length);
+      }, 2000);
 
-  return () => clearInterval(interval);
-}
-}, [index]);
+      return () => clearInterval(interval);
+    }
+  }, [index]);
 
   const getPosition = (i: number) => {
     const diff = (i - index + projects.length) % projects.length;
     if (diff === 0) return "center";
     if (diff === 1) return "right";
-    return "left";
+    if (diff === projects.length - 1) return "left";
+    return "hidden";
   };
 
   return (
     <section id="cta" style={styles.section}>
       <div style={styles.container}>
-        
+
         {/* 🔹 TEXT (UNCHANGED) */}
         <div style={styles.content}>
           <div style={styles.inner}>
@@ -82,8 +119,8 @@ const CTA: React.FC = () => {
             </p>
           </div>
           <div style={styles.actions}>
-            <a 
-              href="#footer" 
+            <a
+              href="#footer"
               style={styles.btnPrimary}
               onClick={(e) => {
                 e.preventDefault();
@@ -110,6 +147,7 @@ const CTA: React.FC = () => {
                     ...(position === "center" && styles.center),
                     ...(position === "left" && styles.left),
                     ...(position === "right" && styles.right),
+                    ...(position === "hidden" && styles.hidden),
                   }}
                 >
                   {project.video ? (
@@ -137,13 +175,13 @@ const CTA: React.FC = () => {
                     <h3 style={styles.cardTitle}>{project.title}</h3>
                     <p style={styles.cardDesc}>{project.desc}</p>
                     {project.features && (
-                  <ul style={styles.featuresList}>
-                    {project.features.map((feature, idx) => (
-                      <li key={idx} style={styles.featureItem}>
-                        • {feature}
-                      </li>
-                    ))}
-                  </ul>
+                      <ul style={styles.featuresList}>
+                        {project.features.map((feature, idx) => (
+                          <li key={idx} style={styles.featureItem}>
+                            • {feature}
+                          </li>
+                        ))}
+                      </ul>
                     )}
                   </div>
                 </div>
@@ -225,9 +263,9 @@ const styles: Record<string, React.CSSProperties> = {
   // 🔥 BOX (REPLACED PLACEHOLDER)
   carouselBox: {
     width: "100%",
-    height: 500,
+    height: 560,
     borderRadius: 16,
-    background: "linear-gradient(135deg,000B0D   )",
+    background: "transparent",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -238,7 +276,7 @@ const styles: Record<string, React.CSSProperties> = {
   carouselWrapper: {
     position: "relative",
     width: "100%",
-    height: 400,
+    height: 500,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -246,50 +284,61 @@ const styles: Record<string, React.CSSProperties> = {
   },
 
   card: {
-  position: "absolute",
-  width: 300,            // 👈 slightly wider
-  height: 420,           // 👈 increased height
-  borderRadius: 20,
-  overflow: "hidden",
-  background: "rgba(255,255,255,0.05)",
-  border: "1px solid rgba(139,92,246,0.3)",
-  transition: "all 0.6s ease",
-  backdropFilter: "blur(10px)",
-  display: "flex",
-  flexDirection: "column",
-  cursor: "pointer",
-  
-},
+    position: "absolute",
+    width: 380,            // increased width
+    height: 480,           // increased height
+    borderRadius: 20,
+    overflow: "hidden",
+    background: "rgba(25, 30, 40, 0.6)", // better solid dark transparent base
+    border: "1px solid rgba(139,92,246,0.2)",
+    transition: "all 0.6s cubic-bezier(0.4, 0, 0.2, 1)", // smoother transition
+    backdropFilter: "blur(12px)",
+    display: "flex",
+    flexDirection: "column",
+    cursor: "pointer",
+    boxShadow: "0 10px 30px -10px rgba(0,0,0,0.5)",
+  },
 
   center: {
-    transform: "translateX(0) scale(1.1)",
+    transform: "translateX(0) scale(1)",
     zIndex: 3,
     opacity: 1,
+    boxShadow: "0 20px 40px -10px rgba(139,92,246,0.3)",
+    border: "1px solid rgba(139,92,246,0.5)",
   },
 
   left: {
-    transform: "translateX(-240px) rotateY(25deg) scale(0.9)",
-    opacity: 0.5,
+    transform: "translateX(-320px) rotateY(15deg) scale(0.85)",
+    zIndex: 2,
+    opacity: 0.4,
   },
 
   right: {
-    transform: "translateX(240px) rotateY(-25deg) scale(0.9)",
-    opacity: 0.5,
+    transform: "translateX(320px) rotateY(-15deg) scale(0.85)",
+    zIndex: 2,
+    opacity: 0.4,
+  },
+
+  hidden: {
+    transform: "translateX(0) scale(0.7)",
+    zIndex: 1,
+    opacity: 0,
+    pointerEvents: "none",
   },
 
   image: {
-  width: "100%",
-  height: 200, // 👈 slightly bigger
-  objectFit: "cover",
-},  
+    width: "100%",
+    height: 240, // proportionally larger image
+    objectFit: "cover",
+  },
 
   cardContent: {
-  padding: 16,
-  display: "flex",
-  flexDirection: "column",
-  gap: 6,
-  flex: 1, // 👈 important for spacing
-},
+    padding: 16,
+    display: "flex",
+    flexDirection: "column",
+    gap: 6,
+    flex: 1, // 👈 important for spacing
+  },
 
   cardTitle: {
     color: "#fff",
@@ -302,19 +351,19 @@ const styles: Record<string, React.CSSProperties> = {
   },
 
   featuresList: {
-  marginTop: 10,
-  paddingLeft: 0,
-  listStyle: "none",
-  display: "flex",
-  flexDirection: "column",
-  gap: 4,
-},
+    marginTop: 10,
+    paddingLeft: 0,
+    listStyle: "none",
+    display: "flex",
+    flexDirection: "column",
+    gap: 4,
+  },
 
-featureItem: {
-  fontSize: 12,
-  color: "#A78BFA", // 👈 purple tone
-  opacity: 0.9,
-},
+  featureItem: {
+    fontSize: 12,
+    color: "#A78BFA", // 👈 purple tone
+    opacity: 0.9,
+  },
 };
 
 export default CTA;
