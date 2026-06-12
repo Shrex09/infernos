@@ -1,193 +1,176 @@
 import React from "react";
+import { useReveal, revealStyle, useTilt } from "../hooks";
 
 interface Service {
-  icon: string;
+  icon: React.ReactNode;
   title: string;
   description: string;
+  tags: string[];
 }
+
+const ic = (d: string) => (
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+    <path d={d} />
+  </svg>
+);
 
 const services: Service[] = [
   {
-    icon: "⬡",
+    icon: ic("M8 9l-4 3 4 3M16 9l4 3-4 3M13 5l-2 14"),
     title: "Web development",
-    description: "Full-stack web applications built with modern frameworks and clean architecture.",
+    description: "Full-stack web applications with clean architecture, fast load times and infrastructure that scales with your traffic.",
+    tags: ["React", "Node.js", "TypeScript"],
   },
   {
-    icon: "⊞",
+    icon: ic("M12 2a4 4 0 014 4v12a4 4 0 01-8 0V6a4 4 0 014-4zM12 18h.01"),
     title: "Mobile applications",
-    description: "Native and cross-platform mobile apps that deliver exceptional user experiences.",
+    description: "Native and cross-platform mobile apps with smooth performance and store-ready quality on iOS and Android.",
+    tags: ["React Native", "iOS", "Android"],
   },
   {
-    icon: "◈",
-    title: "UI/UX design",
-    description: "Intuitive interfaces and engaging experiences that drive user satisfaction.",
+    icon: ic("M4 4h16v12H4zM4 20h16M9 16v4M15 16v4"),
+    title: "UI / UX design",
+    description: "Interfaces designed around real user behaviour — wireframes, prototypes and design systems that convert.",
+    tags: ["Figma", "Prototyping", "Design systems"],
   },
   {
-    icon: "⟳",
+    icon: ic("M6 9h12M6 15h12M3 5h18v14H3zM7 19v2M17 19v2"),
+    title: "E-commerce platforms",
+    description: "Storefronts with catalog management, payments and order flows — proven across fashion, fitness and retail clients.",
+    tags: ["Payments", "Catalog", "SEO"],
+  },
+  {
+    icon: ic("M21 12a9 9 0 11-9-9M21 3l-9 9M21 3h-6M21 3v6"),
     title: "Digital transformation",
-    description: "Strategic implementation of technology to modernize your business processes.",
+    description: "We modernize legacy workflows into reliable digital systems — from inventory scanning to patient records.",
+    tags: ["Automation", "Integrations", "Migration"],
+  },
+  {
+    icon: ic("M12 3l8 4.5v9L12 21l-8-4.5v-9zM12 12l8-4.5M12 12v9M12 12L4 7.5"),
+    title: "Maintenance & support",
+    description: "Post-launch monitoring, updates and continuous improvement so the product you ship keeps getting better.",
+    tags: ["Monitoring", "Updates", "SLA"],
   },
 ];
 
-const Services: React.FC = () => (
-  <section id="services" style={styles.section}>
-    <div style={styles.container}>
-      <div style={styles.sectionTitle}>
-        <span style={styles.tagline}>Services</span>
-        <div style={styles.textBlock}>
-          <h2 style={styles.heading}>What we build for you</h2>
-          <p style={styles.text}>
-            From concept to launch, we provide end-to-end digital solutions that drive results and exceed expectations.
-          </p>
+const ServiceCard: React.FC<{ svc: Service; index: number; visible: boolean }> = ({ svc, index, visible }) => {
+  const { ref, onMouseMove, onMouseLeave } = useTilt(7);
+
+  return (
+    <div style={{ ...revealStyle(visible, index * 90), perspective: 1100 }}>
+      <div
+        ref={ref}
+        className="glass hover-glow"
+        style={styles.card}
+        onMouseMove={onMouseMove}
+        onMouseLeave={onMouseLeave}
+      >
+        <div style={styles.cardTop}>
+          <div style={styles.iconRing}>{svc.icon}</div>
+          <span style={styles.cardIndex}>[ 0{index + 1} ]</span>
+        </div>
+        <h3 style={styles.cardHeading}>{svc.title}</h3>
+        <p style={styles.cardText}>{svc.description}</p>
+        <div style={styles.tagRow}>
+          {svc.tags.map((t) => (
+            <span key={t} className="chip">{t}</span>
+          ))}
         </div>
       </div>
-      <div style={styles.grid}>
-        {services.map((svc, i) => (
-          <div key={i} style={styles.card}>
-            <div style={styles.icon}>{svc.icon}</div>
-            <div style={styles.cardContent}>
-              <h3 style={styles.cardHeading}>{svc.title}</h3>
-              <p style={styles.cardText}>{svc.description}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div style={styles.actions}>
-        <a 
-          href="#cta" 
-          style={styles.btnOutline}
-          onClick={(e) => {
-            e.preventDefault();
-            document.getElementById('cta')?.scrollIntoView({ behavior: 'smooth' });
-          }}
-        >
-          Explore
-        </a>
-      </div>
     </div>
-  </section>
-);
+  );
+};
+
+const Services: React.FC = () => {
+  const head = useReveal();
+  const grid = useReveal();
+
+  return (
+    <section id="services" className="section" style={styles.section}>
+      <div className="section-inner">
+        <div ref={head.ref} style={{ ...styles.header, ...revealStyle(head.visible) }}>
+          <span className="kicker">Services</span>
+          <h2 className="section-heading">
+            What we <span className="text-gradient">build</span> for you
+          </h2>
+          <p className="section-sub">
+            End-to-end delivery — from the first architecture diagram to the
+            production deploy and beyond.
+          </p>
+        </div>
+
+        <div ref={grid.ref} style={styles.grid}>
+          {services.map((svc, i) => (
+            <ServiceCard key={svc.title} svc={svc} index={i} visible={grid.visible} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
 
 const styles: Record<string, React.CSSProperties> = {
   section: {
-    background: "#000B0D",
-    padding: "112px 64px",
-    display: "flex",
-    justifyContent: "center",
+    background: "var(--bg)",
   },
-  container: {
-    maxWidth: 1280,
-    width: "100%",
+  header: {
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
-    gap: 80,
-  },
-  sectionTitle: {
-    maxWidth: 768,
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    gap: 16,
-    alignItems: "center",
-    textAlign: "center",
-  },
-  tagline: {
-    fontFamily: "'Inter', sans-serif",
-    fontWeight: 600,
-    fontSize: 16,
-    color: "#FFFFFF",
-  },
-  textBlock: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 24,
-  },
-  heading: {
-    fontFamily: "'Unbounded', sans-serif",
-    fontWeight: 700,
-    fontSize: "clamp(32px, 4vw, 60px)",
-    lineHeight: 1.2,
-    letterSpacing: "-0.01em",
-    color: "#FFFFFF",
-    textAlign: "center",
-  },
-  text: {
-    fontFamily: "'Inter', sans-serif",
-    fontWeight: 400,
-    fontSize: 20,
-    lineHeight: 1.5,
-    color: "#FFFFFF",
-    textAlign: "center",
+    gap: 18,
+    marginBottom: 64,
   },
   grid: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: 32,
-    justifyContent: "center",
-    width: "100%",
-  },
-  card: {
-    flex: "1 1 240px",
-    maxWidth: 296,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
     gap: 24,
   },
-  icon: {
-    width: 48,
-    height: 48,
-    fontSize: 32,
-    color: "#FFFFFF",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  cardContent: {
+  card: {
+    padding: 30,
     display: "flex",
     flexDirection: "column",
     gap: 16,
+    height: "100%",
+    transformStyle: "preserve-3d",
+  },
+  cardTop: {
+    display: "flex",
+    justifyContent: "space-between",
     alignItems: "center",
   },
-  cardHeading: {
-    fontFamily: "'Unbounded', sans-serif",
-    fontWeight: 700,
-    fontSize: "clamp(20px, 2vw, 32px)",
-    lineHeight: 1.3,
-    letterSpacing: "-0.01em",
-    color: "#FFFFFF",
-    textAlign: "center",
-  },
-  cardText: {
-    fontFamily: "'Inter', sans-serif",
-    fontWeight: 400,
-    fontSize: 18,
-    lineHeight: 1.5,
-    color: "#FFFFFF",
-    textAlign: "center",
-  },
-  actions: {
+  iconRing: {
+    width: 52,
+    height: 52,
+    borderRadius: 14,
     display: "flex",
     alignItems: "center",
-    gap: 24,
+    justifyContent: "center",
+    color: "#ff9357",
+    background: "linear-gradient(145deg, rgba(255, 90, 30, 0.18), rgba(255, 165, 60, 0.06))",
+    border: "1px solid rgba(255, 130, 55, 0.3)",
+    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08)",
   },
-  btnOutline: {
-    fontFamily: "'Inter', sans-serif",
-    fontWeight: 500,
-    fontSize: 18,
-    color: "#FFFFFF",
-    padding: "6px 12px",
-    border: "1px solid rgba(255,255,255,0.2)",
-    borderRadius: 12,
-    cursor: "pointer",
+  cardIndex: {
+    fontFamily: "var(--font-mono)",
+    fontSize: 12,
+    color: "rgba(255, 155, 70, 0.55)",
   },
-  btnLink: {
-    fontFamily: "'Inter', sans-serif",
-    fontWeight: 500,
-    fontSize: 18,
-    color: "#FFFFFF",
-    cursor: "pointer",
+  cardHeading: {
+    fontFamily: "var(--font-display)",
+    fontWeight: 700,
+    fontSize: 19,
+    color: "#fff",
+    letterSpacing: "-0.01em",
+  },
+  cardText: {
+    fontSize: 15,
+    lineHeight: 1.65,
+    color: "var(--muted)",
+    flex: 1,
+  },
+  tagRow: {
+    display: "flex",
+    gap: 8,
+    flexWrap: "wrap",
   },
 };
 

@@ -1,34 +1,246 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
+
+/* ────────────────────────────────────────
+   3D PARTICLE GLOBE
+   Fibonacci sphere → rotation matrix →
+   perspective projection. Mouse parallax.
+──────────────────────────────────────── */
+const HeroGlobe: React.FC = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mouseRef = useRef({ x: 0.5, y: 0.5 });
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let w = 0;
+    let h = 0;
+    let raf = 0;
+
+    // ── Geometry: evenly distributed points on a unit sphere
+    const N = 340;
+    const pts: { x: number; y: number; z: number }[] = [];
+    const golden = Math.PI * (3 - Math.sqrt(5));
+    for (let i = 0; i < N; i++) {
+      const y = 1 - (i / (N - 1)) * 2;
+      const r = Math.sqrt(1 - y * y);
+      pts.push({ x: Math.cos(golden * i) * r, y, z: Math.sin(golden * i) * r });
+    }
+
+    // ── Static topology: connect near neighbours once (not per frame)
+    const links: [number, number][] = [];
+    const MAX_D2 = 0.24 * 0.24;
+    for (let i = 0; i < N; i++) {
+      for (let j = i + 1; j < N; j++) {
+        const dx = pts[i].x - pts[j].x;
+        const dy = pts[i].y - pts[j].y;
+        const dz = pts[i].z - pts[j].z;
+        if (dx * dx + dy * dy + dz * dz < MAX_D2) links.push([i, j]);
+      }
+    }
+
+    const proj = new Array<{ sx: number; sy: number; z: number; s: number }>(N);
+    let rotY = 0;
+    let tiltX = 0;
+    let tiltY = 0;
+    let last = performance.now();
+
+    const render = (now: number) => {
+      // Delta-time so speed is identical on 60Hz and 144Hz displays,
+      // and a dropped frame never causes a visible jump (capped at 3 frames).
+      const dt = Math.min((now - last) / 16.667, 3);
+      last = now;
+
+      rotY += 0.0022 * dt;
+      // Smoothly chase the cursor for parallax (frame-rate independent easing)
+      const ease = 1 - Math.pow(0.955, dt);
+      tiltX += ((mouseRef.current.y - 0.5) * 0.45 - tiltX) * ease;
+      tiltY += ((mouseRef.current.x - 0.5) * 0.6 - tiltY) * ease;
+
+      const R = Math.min(w, h) * 0.44;
+      const cx = w / 2;
+      const cy = h / 2;
+      const fov = 3.4;
+
+      for (let i = 0; i < N; i++) {
+        const p = pts[i];
+        const cyr = Math.cos(rotY + tiltY);
+        const syr = Math.sin(rotY + tiltY);
+        let x = p.x * cyr + p.z * syr;
+        let z = -p.x * syr + p.z * cyr;
+        const cxr = Math.cos(tiltX);
+        const sxr = Math.sin(tiltX);
+        const y = p.y * cxr - z * sxr;
+        z = p.y * sxr + z * cxr;
+        const s = fov / (fov + z);
+        proj[i] = { sx: cx + x * R * s, sy: cy + y * R * s, z, s };
+      }
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Mesh lines — brighter at the front, ghosted at the back
+      ctx.lineWidth = 0.6;
+      for (const [a, b] of links) {
+        const pa = proj[a];
+        const pb = proj[b];
+        const front = 1 - (pa.z + pb.z) / 2; // 0 back … 2 front
+        ctx.strokeStyle = `rgba(255, 130, 55, ${0.03 + front * 0.09})`;
+        ctx.beginPath();
+        ctx.moveTo(pa.sx, pa.sy);
+        ctx.lineTo(pb.sx, pb.sy);
+        ctx.stroke();
+      }
+
+      // Nodes
+      for (const p of proj) {
+        const front = (1 - p.z) / 2; // 1 front, 0 back
+        ctx.fillStyle = `rgba(255, ${125 + front * 85}, ${55 + front * 40}, ${0.18 + front * 0.6})`;
+        ctx.beginPath();
+        ctx.arc(p.sx, p.sy, 0.8 + p.s * 1.1 * front + 0.4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      raf = requestAnimationFrame(render);
+    };
+
+    const resize = () => {
+      w = canvas.offsetWidth;
+      h = canvas.offsetHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+
+    const onMouse = (e: MouseEvent) => {
+      mouseRef.current = {
+        x: e.clientX / window.innerWidth,
+        y: e.clientY / window.innerHeight,
+      };
+    };
+
+    resize();
+    window.addEventListener("resize", resize);
+    window.addEventListener("mousemove", onMouse);
+    raf = requestAnimationFrame(render);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("mousemove", onMouse);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} style={styles.canvas} />;
+};
+
+/* ────────────────────────────────────────
+   TYPING TERMINAL LINE
+──────────────────────────────────────── */
+const commands = [
+  "infernos build --stack react,node --scale production",
+  "infernos deploy --client you --uptime 99.9%",
+  "infernos ship --from idea --to launch",
+];
+
+const TypeLine: React.FC = () => {
+  const [text, setText] = useState("");
+  const [idx, setIdx] = useState(0);
+
+  useEffect(() => {
+    const target = commands[idx];
+    let i = 0;
+    let timer: ReturnType<typeof setTimeout>;
+
+    const type = () => {
+      if (i <= target.length) {
+        setText(target.slice(0, i));
+        i++;
+        timer = setTimeout(type, 38);
+      } else {
+        timer = setTimeout(() => setIdx((p) => (p + 1) % commands.length), 2600);
+      }
+    };
+    type();
+    return () => clearTimeout(timer);
+  }, [idx]);
+
+  return (
+    <div style={styles.terminalLine}>
+      <span style={{ color: "#34d399" }}>$</span>
+      <span style={styles.terminalText}>{text}</span>
+      <span className="cursor-blink" />
+    </div>
+  );
+};
+
+/* ────────────────────────────────────────
+   HERO
+──────────────────────────────────────── */
+const heroMetrics = [
+  { value: "10+", label: "Projects delivered" },
+  { value: "96%", label: "Client satisfaction" },
+  { value: "6", label: "Products in production" },
+  { value: "2+", label: "Years building" },
+];
+
+const scrollTo = (id: string) =>
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 
 const Hero: React.FC = () => (
-  <section style={styles.section}>
-    
-    {/* Background Video */}
-    <video
-      autoPlay
-      loop
-      muted
-      playsInline
-      style={styles.video}
-    >
-      <source src="/herobg12.mp4" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
+  <section data-section="hero" style={styles.section} className="grid-bg">
+    <HeroGlobe />
 
-    {/* Overlay */}
-    <div style={styles.overlay} />
+    {/* Radial vignettes so content stays readable over the globe */}
+    <div style={styles.vignette} />
+    <div style={styles.glowTop} />
 
-    {/* Content */}
-    <div style={styles.container}>
-      <div style={styles.column}>
-        <div style={styles.contentWrap}>
-          <h1 style={styles.heading}>
-            Build the future with modern IT solutions
-          </h1>
-          <p style={styles.subtext}>
-            We build digital products that transform businesses. From web apps to mobile solutions, we create technology that works.
-          </p>
-        </div>
+    <div style={styles.content}>
+      <div style={styles.statusChip} className="glass">
+        <span className="status-dot" />
+        <span style={styles.statusText}>Available for new projects</span>
+      </div>
+
+      <h1 style={styles.heading}>
+        We engineer digital
+        <br />
+        products <span className="text-gradient">that scale</span>
+      </h1>
+
+      <p style={styles.sub}>
+        Full-stack web platforms, mobile apps and e-commerce systems —
+        designed, built and shipped to production by a team that treats your
+        product like its own.
+      </p>
+
+      <TypeLine />
+
+      <div style={styles.actions}>
+        <button className="btn-primary" onClick={() => scrollTo("contact")}>
+          Start a project <span style={{ fontSize: 18, lineHeight: 1 }}>→</span>
+        </button>
+        <button className="btn-ghost" onClick={() => scrollTo("work")}>
+          View our work
+        </button>
+      </div>
+
+      <div style={styles.metricsRow}>
+        {heroMetrics.map((m, i) => (
+          <React.Fragment key={m.label}>
+            {i > 0 && <div style={styles.metricDivider} className="hide-mobile" />}
+            <div style={styles.metric}>
+              <span style={styles.metricValue}>{m.value}</span>
+              <span style={styles.metricLabel}>{m.label}</span>
+            </div>
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
+
+    <div style={styles.scrollHint}>
+      <div style={styles.scrollPill}>
+        <div style={styles.scrollDot} />
       </div>
     </div>
   </section>
@@ -36,109 +248,155 @@ const Hero: React.FC = () => (
 
 const styles: Record<string, React.CSSProperties> = {
   section: {
-    background: "#E5EEFF",
-    height: 900,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: "0 64px",
     position: "relative",
+    minHeight: "100vh",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "140px 24px 100px",
     overflow: "hidden",
+    background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(170, 55, 12, 0.22), transparent 60%), #0a0605",
   },
-
-  // ✅ Video Style
-  video: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    zIndex: 0,
-  },
-
-  // ✅ Overlay (above video)
-  overlay: {
+  canvas: {
     position: "absolute",
     inset: 0,
-    background: "rgba(0,0,0,0.5)",
-    zIndex: 1,
-  },
-
-  container: {
-    maxWidth: 1280,
     width: "100%",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+    height: "100%",
+    opacity: 0.9,
+  },
+  vignette: {
+    position: "absolute",
+    inset: 0,
+    background: "radial-gradient(ellipse 55% 50% at 50% 50%, rgba(10, 6, 4, 0.82) 0%, rgba(10, 6, 4, 0.35) 55%, transparent 100%)",
+    pointerEvents: "none",
+  },
+  glowTop: {
+    position: "absolute",
+    top: "-30%",
+    left: "50%",
+    transform: "translateX(-50%)",
+    width: 900,
+    height: 500,
+    background: "radial-gradient(ellipse, rgba(255, 105, 35, 0.16), transparent 65%)",
+    filter: "blur(40px)",
+    pointerEvents: "none",
+  },
+  content: {
     position: "relative",
     zIndex: 2,
-  },
-
-  column: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: 32,
-    maxWidth: 768,
-    width: "100%",
+    textAlign: "center",
+    gap: 28,
+    maxWidth: 880,
   },
-
-  contentWrap: {
-    display: "flex",
-    flexDirection: "column",
+  statusChip: {
+    display: "inline-flex",
     alignItems: "center",
-    gap: 24,
+    gap: 10,
+    padding: "8px 18px",
+    borderRadius: 999,
   },
-
+  statusText: {
+    fontFamily: "var(--font-mono)",
+    fontSize: 13,
+    fontWeight: 500,
+    color: "rgba(245, 238, 230, 0.85)",
+    letterSpacing: "0.04em",
+  },
   heading: {
-    fontFamily: "'Unbounded', sans-serif",
-    fontWeight: 700,
-    fontSize: "clamp(40px, 6vw, 84px)",
-    lineHeight: 1.1,
-    textAlign: "center",
-    letterSpacing: "-0.01em",
-    color: "#FFFFFF",
+    fontFamily: "var(--font-display)",
+    fontWeight: 800,
+    fontSize: "clamp(36px, 6.4vw, 78px)",
+    lineHeight: 1.08,
+    letterSpacing: "-0.015em",
+    color: "#fff",
+    textShadow: "0 0 60px rgba(255, 90, 30, 0.35)",
   },
-
-  subtext: {
-    fontFamily: "'Inter', sans-serif",
-    fontWeight: 400,
-    fontSize: 20,
-    lineHeight: 1.5,
-    textAlign: "center",
-    color: "#FFFFFF",
-    maxWidth: 600,
+  sub: {
+    fontSize: "clamp(16px, 1.6vw, 19px)",
+    lineHeight: 1.65,
+    color: "var(--muted)",
+    maxWidth: 620,
   },
-
+  terminalLine: {
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    fontFamily: "var(--font-mono)",
+    fontSize: 14,
+    padding: "10px 20px",
+    borderRadius: 10,
+    background: "rgba(16, 9, 6, 0.7)",
+    border: "1px solid rgba(255, 130, 55, 0.18)",
+    backdropFilter: "blur(8px)",
+    minHeight: 42,
+    maxWidth: "92vw",
+    overflow: "hidden",
+  },
+  terminalText: {
+    color: "rgba(255, 210, 175, 0.92)",
+    whiteSpace: "nowrap",
+  },
   actions: {
     display: "flex",
     gap: 16,
+    flexWrap: "wrap",
+    justifyContent: "center",
+  },
+  metricsRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: 28,
+    marginTop: 22,
+    flexWrap: "wrap",
+    justifyContent: "center",
+  },
+  metricDivider: {
+    width: 1,
+    height: 36,
+    background: "linear-gradient(180deg, transparent, rgba(255,255,255,0.18), transparent)",
+  },
+  metric: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 2,
     alignItems: "center",
   },
-
-  btnPrimary: {
-    fontFamily: "'Inter', sans-serif",
-    fontWeight: 500,
-    fontSize: 18,
-    color: "#FFFFFF",
-    padding: "6px 12px",
-    background: "#0057FF",
-    border: "1px solid #0057FF",
-    borderRadius: 12,
-    cursor: "pointer",
+  metricValue: {
+    fontFamily: "var(--font-mono)",
+    fontWeight: 600,
+    fontSize: 22,
+    color: "#fff",
   },
-
-  btnOutline: {
-    fontFamily: "'Inter', sans-serif",
-    fontWeight: 500,
-    fontSize: 18,
-    color: "#000B0D",
-    padding: "6px 12px",
-    border: "1px solid rgba(0,11,13,0.15)",
-    borderRadius: 12,
-    cursor: "pointer",
-    background: "white",
+  metricLabel: {
+    fontSize: 12.5,
+    color: "var(--faint)",
+    letterSpacing: "0.04em",
+  },
+  scrollHint: {
+    position: "absolute",
+    bottom: 28,
+    left: "50%",
+    transform: "translateX(-50%)",
+    zIndex: 2,
+  },
+  scrollPill: {
+    width: 24,
+    height: 40,
+    borderRadius: 14,
+    border: "1.5px solid rgba(255,255,255,0.25)",
+    display: "flex",
+    justifyContent: "center",
+    paddingTop: 7,
+  },
+  scrollDot: {
+    width: 4,
+    height: 8,
+    borderRadius: 3,
+    background: "var(--amber)",
+    animation: "scroll-hint 1.8s ease-in-out infinite",
   },
 };
 
