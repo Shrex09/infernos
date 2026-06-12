@@ -1,27 +1,31 @@
 import React from "react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
-import LogoStrip from "./components/LogoStrip";
-import About from "./components/About";
+import TrustBar from "./components/TrustBar";
 import Services from "./components/Services";
+import TechStack from "./components/TechStack";
+import Process from "./components/Process";
+import Work from "./components/Work";
 import Stats from "./components/Stats";
-import Timeline from "./components/Timeline";
+import WhyUs from "./components/WhyUs";
 import Testimonials from "./components/Testimonials";
-import CTA from "./components/CTA";
+import CTABand from "./components/CTABand";
 import Footer from "./components/Footer";
 
 const App: React.FC = () => {
   return (
-    <div style={{ width: "100%", overflowX: "hidden" }}>
+    <div style={{ width: "100%", overflowX: "hidden", background: "var(--bg)" }}>
       <Navbar />
       <Hero />
-      <LogoStrip />
-      <About />
+      <TrustBar />
       <Services />
-      <CTA />
+      <TechStack />
+      <Process />
+      <Work />
       <Stats />
-      <Timeline />
+      <WhyUs />
       <Testimonials />
+      <CTABand />
       <Footer />
     </div>
   );

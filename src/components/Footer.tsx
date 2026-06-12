@@ -1,9 +1,35 @@
 import React, { useState } from "react";
 import emailjs from "@emailjs/browser";
 
+type SendState = "idle" | "sending" | "sent" | "error";
+
+const inputBase: React.CSSProperties = {
+  width: "100%",
+  background: "rgba(255, 255, 255, 0.03)",
+  border: "1px solid rgba(255, 255, 255, 0.12)",
+  borderRadius: 10,
+  padding: "13px 16px",
+  fontFamily: "var(--font-body)",
+  fontSize: 15,
+  color: "#fff",
+  outline: "none",
+  transition: "border-color 0.25s ease, box-shadow 0.25s ease",
+};
+
+const focusOn = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  e.currentTarget.style.borderColor = "rgba(255, 140, 60, 0.6)";
+  e.currentTarget.style.boxShadow = "0 0 0 3px rgba(255, 105, 35, 0.15)";
+};
+
+const focusOff = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.12)";
+  e.currentTarget.style.boxShadow = "none";
+};
+
 const Footer: React.FC = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [state, setState] = useState<SendState>("idle");
 
   const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
   const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
@@ -11,101 +37,123 @@ const Footer: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!email || !message) {
-      alert("Please fill all fields");
+      setState("error");
       return;
     }
-
     if (!serviceId || !templateId || !publicKey) {
-      alert("Email service is not configured. Please set VITE_EMAILJS_* variables.");
+      setState("error");
       return;
     }
-
     try {
-      await emailjs.send(
-        serviceId,
-        templateId,
-        {
-          user_email: email,
-          message,
-        },
-        publicKey
-      );
-
-      alert("Message sent successfully");
+      setState("sending");
+      await emailjs.send(serviceId, templateId, { user_email: email, message }, publicKey);
+      setState("sent");
       setEmail("");
       setMessage("");
     } catch (error) {
       console.error(error);
-      alert("Failed to send message");
+      setState("error");
     }
   };
 
+  const statusLine: Record<SendState, { text: string; color: string } | null> = {
+    idle: null,
+    sending: { text: "▸ sending…", color: "#ffc296" },
+    sent: { text: "✓ Message sent — we'll get back to you within 24 hours.", color: "#7df0c0" },
+    error: { text: "✗ Could not send. Check the fields, or email us directly below.", color: "#ff8a8a" },
+  };
+  const status = statusLine[state];
+
   return (
-    <footer id="footer" style={styles.footer}>
+    <footer id="contact" style={styles.footer}>
+      <div style={styles.topGlow} />
       <div style={styles.container}>
         <div style={styles.content}>
-          <div style={styles.newsletter}>
-            <div style={styles.logo}>
-              <span style={styles.logoText}>Inferno</span>
+          {/* ── Contact form ── */}
+          <div style={styles.formCol}>
+            <div style={styles.logoRow}>
+              <img src="/infernos.jpeg" alt="Infernos" style={styles.logoImg} />
+              <span style={styles.logoText}>INFERNOS</span>
             </div>
 
-            <p style={styles.newsletterText}>
-              Tell us about your project - we will get back to you.
+            <p style={styles.pitch}>
+              Tell us about your project — we reply with a concrete plan, not a
+              pitch deck.
             </p>
 
-            <div style={styles.actions}>
+            <div style={styles.form}>
+              <label style={styles.label}>your_email</label>
               <input
                 type="email"
-                placeholder="Your email"
+                placeholder="you@company.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                style={styles.input}
+                onFocus={focusOn}
+                onBlur={focusOff}
+                style={inputBase}
               />
 
+              <label style={styles.label}>project_brief</label>
               <textarea
-                placeholder="Describe your project..."
+                placeholder="What are you building? Timeline? Budget range?"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                style={styles.textarea}
+                onFocus={focusOn}
+                onBlur={focusOff}
+                style={{ ...inputBase, minHeight: 110, resize: "vertical" }}
               />
 
-              <button onClick={handleSubmit} style={styles.btnSubscribe}>
-                Send
+              <button
+                className="btn-primary"
+                style={{ justifyContent: "center", opacity: state === "sending" ? 0.7 : 1 }}
+                onClick={handleSubmit}
+                disabled={state === "sending"}
+              >
+                {state === "sending" ? "Sending…" : "Send message →"}
               </button>
+
+              {status && (
+                <span style={{ ...styles.status, color: status.color }}>{status.text}</span>
+              )}
             </div>
           </div>
 
+          {/* ── Link columns ── */}
           <div style={styles.links}>
             <div style={styles.linkCol}>
-              <span style={styles.colTitle}>Services</span>
+              <span style={styles.colTitle}>services/</span>
               <div style={styles.linkList}>
-                {[
-                  "Web development",
-                  "Mobile apps",
-                  "UI/UX design",
-                  "Digital transformation",
-                  "Case studies",
-                ].map((l, i) => (
-                  <a key={i} style={styles.link}>
+                {["Web development", "Mobile apps", "UI/UX design", "E-commerce", "Digital transformation"].map((l) => (
+                  <a
+                    key={l}
+                    href="#services"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById("services")?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    style={styles.link}
+                  >
                     {l}
                   </a>
                 ))}
               </div>
             </div>
+
             <div style={styles.linkCol}>
-              <span style={styles.colTitle}>Company</span>
+              <span style={styles.colTitle}>company/</span>
               <div style={styles.linkList}>
                 {[
-                  { label: "About us", id: "about" },
-                  { label: "Our team", id: "team" },
-                  { label: "Contact", id: "footer" }
-                ].map((l, i) => (
+                  { label: "Why us", id: "why" },
+                  { label: "Our work", id: "work" },
+                  { label: "Process", id: "process" },
+                  { label: "Contact", id: "contact" },
+                ].map((l) => (
                   <a
-                    key={i}
+                    key={l.id + l.label}
                     href={`#${l.id}`}
                     onClick={(e) => {
                       e.preventDefault();
-                      document.getElementById(l.id)?.scrollIntoView({ behavior: 'smooth' });
+                      document.getElementById(l.id)?.scrollIntoView({ behavior: "smooth" });
                     }}
                     style={styles.link}
                   >
@@ -114,13 +162,14 @@ const Footer: React.FC = () => {
                 ))}
               </div>
             </div>
+
             <div style={styles.linkCol}>
-              <span style={styles.colTitle}>Follow us</span>
+              <span style={styles.colTitle}>connect/</span>
               <div style={styles.linkList}>
                 {[
                   {
                     icon: (
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
                         <defs>
                           <linearGradient id="ig-grad" x1="0%" y1="100%" x2="100%" y2="0%">
                             <stop offset="0%" stopColor="#f09433" />
@@ -136,44 +185,84 @@ const Footer: React.FC = () => {
                       </svg>
                     ),
                     name: "Instagram",
-                    href: "https://instagram.com/connect.inferno"
+                    href: "https://instagram.com/connect.inferno",
                   },
                   {
                     icon: (
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#25D366" width="24" height="24">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#25D366" width="20" height="20">
                         <path d="M12.031 0C5.385 0 .003 5.385.003 12.03c0 2.124.551 4.195 1.603 6.012L.032 23.996l6.104-1.6c1.761.947 3.738 1.455 5.894 1.455h.001c6.645 0 12.03-5.384 12.03-12.03S18.675 0 12.031 0zm0 21.848h-.001c-1.796 0-3.555-.483-5.097-1.398l-.365-.216-3.785.992.993-3.69-.236-.376C2.564 15.654 2.015 13.882 2.015 12.03 2.015 6.496 6.51 2.001 12.046 2.001c2.68 0 5.197 1.044 7.093 2.94 1.895 1.896 2.94 4.415 2.94 7.095 0 5.534-4.496 10.029-10.03 10.029h-.018zM17.53 14.34c-.302-.152-1.788-.883-2.065-.984-.277-.101-.479-.151-.68.151-.202.302-.782.984-.959 1.185-.177.202-.353.226-.656.075-.302-.151-1.275-.47-2.43-1.498-.897-.799-1.503-1.785-1.68-2.087-.177-.302-.02-.465.131-.616.136-.136.302-.353.453-.53.151-.176.202-.302.302-.503.101-.202.051-.378-.025-.53-.075-.152-.68-1.638-.933-2.243-.245-.589-.494-.509-.68-.518-.178-.009-.38-.01-.582-.01s-.53.076-.807.378C6.945 7.42 6.09 8.226 6.09 9.864c0 1.637.882 3.222 1.008 3.398.126.177 2.316 3.538 5.612 4.96.786.339 1.4.542 1.88.694.787.25 1.504.214 2.067.13.633-.095 1.788-.73 2.04-1.436.252-.705.252-1.31.177-1.436-.075-.126-.277-.202-.579-.353z" />
                       </svg>
                     ),
-                    name: "Whatsapp",
-                    href: "https://wa.me/9021191174"
+                    name: "WhatsApp",
+                    href: "https://wa.me/9021191174",
                   },
                   {
                     icon: (
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#0A66C2" width="24" height="24">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#0A66C2" width="20" height="20">
                         <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                       </svg>
                     ),
                     name: "LinkedIn",
-                    href: "https://www.linkedin.com/in/infernos-solutions/"
+                    href: "https://www.linkedin.com/in/infernos-solutions/",
                   },
-                ].map((s, i) => (
-                  <a key={i} href={s.href} target="_blank" rel="noopener noreferrer" style={styles.socialLink}>
+                ].map((s) => (
+                  <a key={s.name} href={s.href} target="_blank" rel="noopener noreferrer" style={styles.socialLink}>
                     <span style={styles.socialIcon}>{s.icon}</span>
                     <span style={styles.link}>{s.name}</span>
                   </a>
                 ))}
               </div>
+
+              <div style={styles.responseBox}>
+                <span className="status-dot" />
+                <span style={styles.responseText}>Typical response: under 24h</span>
+              </div>
             </div>
           </div>
         </div>
 
+        {/* ── Location ── */}
+        <div className="glass" style={styles.locationPanel}>
+          <div style={styles.locationInfo}>
+            <span style={styles.colTitle}>location/</span>
+            <h3 style={styles.locationHeading}>Where we work from</h3>
+            <span style={styles.coords}>16.861751° N, 74.601806° E</span>
+            <p style={styles.locationCity}>Sangli, Maharashtra, India</p>
+            <p style={styles.locationNote}>
+              Working with clients everywhere — drop by or book a call.
+            </p>
+            <a
+              href="https://maps.app.goo.gl/wiWJZhKQf5K1g8rE6"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-ghost"
+              style={styles.mapLink}
+            >
+              Open in Google Maps ↗
+            </a>
+          </div>
+          <div style={styles.mapWrap}>
+            <iframe
+              title="Infernos location on Google Maps"
+              src="https://www.google.com/maps?q=16.861751,74.601806&z=15&output=embed"
+              style={styles.mapFrame}
+              loading="lazy"
+              allowFullScreen
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+            <div style={styles.mapEdgeGlow} />
+          </div>
+        </div>
+
+        {/* ── Bottom bar ── */}
         <div style={styles.credits}>
           <div style={styles.divider} />
           <div style={styles.creditRow}>
             <span style={styles.copyright}>
-              (c) Inferno IT Solutions. All rights reserved.
+              © {new Date().getFullYear()} Inferno IT Solutions. All rights reserved.
             </span>
-            <a href="mailto:connect.inferno@gmail.com" style={{ ...styles.copyright, textDecoration: 'none', cursor: 'pointer' }}>
+            <span style={styles.builtWith}>built_with: React + TypeScript</span>
+            <a href="mailto:connect.inferno@gmail.com" style={styles.emailLink}>
               connect.inferno@gmail.com
             </a>
           </div>
@@ -185,138 +274,219 @@ const Footer: React.FC = () => {
 
 const styles: Record<string, React.CSSProperties> = {
   footer: {
-    background: "#000B0D",
-    padding: "80px 64px",
+    position: "relative",
+    background: "var(--bg-2)",
+    padding: "100px 64px 48px",
     display: "flex",
     justifyContent: "center",
+    borderTop: "1px solid rgba(255, 115, 45, 0.12)",
+    overflow: "hidden",
+  },
+  topGlow: {
+    position: "absolute",
+    top: -200,
+    left: "50%",
+    transform: "translateX(-50%)",
+    width: 800,
+    height: 400,
+    background: "radial-gradient(ellipse, rgba(255, 100, 35, 0.1), transparent 65%)",
+    filter: "blur(40px)",
+    pointerEvents: "none",
   },
   container: {
+    position: "relative",
     maxWidth: 1280,
     width: "100%",
     display: "flex",
     flexDirection: "column",
-    gap: 80,
+    gap: 64,
+    zIndex: 1,
   },
   content: {
     display: "flex",
-    gap: 128,
+    gap: 80,
     flexWrap: "wrap",
   },
-  newsletter: {
-    flex: "0 0 400px",
+  formCol: {
+    flex: "1 1 380px",
+    maxWidth: 480,
     display: "flex",
     flexDirection: "column",
-    gap: 24,
+    gap: 20,
   },
-  logo: { height: 36, display: "flex", alignItems: "center" },
+  logoRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+  },
+  logoImg: {
+    height: 30,
+    width: 30,
+    objectFit: "contain",
+    borderRadius: 6,
+  },
   logoText: {
-    fontFamily: "'Unbounded', sans-serif",
-    fontWeight: 700,
-    fontSize: 18,
+    fontFamily: "var(--font-display)",
+    fontWeight: 800,
+    fontSize: 16,
     color: "#FFFFFF",
+    letterSpacing: "0.12em",
   },
-  newsletterText: {
-    fontFamily: "'Inter', sans-serif",
-    fontWeight: 400,
-    fontSize: 18,
-    lineHeight: 1.5,
-    color: "#FFFFFF",
-  },
-  actions: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 12,
+  pitch: {
+    fontSize: 16,
+    lineHeight: 1.6,
+    color: "var(--muted)",
   },
   form: {
     display: "flex",
-    gap: 16,
+    flexDirection: "column",
+    gap: 10,
   },
-  input: {
-    flex: 1,
-    background: "transparent",
-    border: "none",
-    borderBottom: "1px solid rgba(255,255,255,0.3)",
-    padding: "8px 0",
-    fontFamily: "'Inter', sans-serif",
-    fontSize: 18,
-    color: "#FFFFFF",
-    outline: "none",
+  label: {
+    fontFamily: "var(--font-mono)",
+    fontSize: 11.5,
+    color: "rgba(255, 205, 165, 0.65)",
+    letterSpacing: "0.1em",
+    marginTop: 6,
   },
-  btnSubscribe: {
-    fontFamily: "'Inter', sans-serif",
-    fontWeight: 500,
-    fontSize: 18,
-    color: "#000000",
-    padding: "6px 12px",
-    border: "1px solid rgba(255,255,255,0.2)",
-    borderRadius: 12,
-    cursor: "pointer",
-    whiteSpace: "nowrap",
-  },
-  disclaimer: {
-    fontFamily: "'Inter', sans-serif",
-    fontWeight: 400,
-    fontSize: 12,
-    lineHeight: 1.5,
-    color: "#FFFFFF",
+  status: {
+    fontFamily: "var(--font-mono)",
+    fontSize: 13,
+    marginTop: 4,
   },
   links: {
     flex: 1,
     display: "flex",
-    gap: 40,
+    gap: 48,
     flexWrap: "wrap",
   },
   linkCol: {
-    flex: "1 1 120px",
+    flex: "1 1 140px",
     display: "flex",
     flexDirection: "column",
-    gap: 16,
+    gap: 18,
   },
   colTitle: {
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "var(--font-mono)",
     fontWeight: 600,
-    fontSize: 18,
-    lineHeight: 1.5,
-    color: "#FFFFFF",
+    fontSize: 14,
+    color: "#ffc296",
+    letterSpacing: "0.06em",
   },
   linkList: {
     display: "flex",
     flexDirection: "column",
   },
   link: {
-    fontFamily: "'Inter', sans-serif",
-    fontWeight: 400,
-    fontSize: 16,
+    fontSize: 15,
     lineHeight: 1.5,
-    color: "#FFFFFF",
-    padding: "8px 0",
+    color: "var(--muted)",
+    padding: "7px 0",
     cursor: "pointer",
+    transition: "color 0.2s",
   },
   socialLink: {
     display: "flex",
     alignItems: "center",
     gap: 12,
-    padding: "8px 0",
+    padding: "7px 0",
     cursor: "pointer",
   },
   socialIcon: {
-    width: 24,
-    height: 24,
-    color: "#FFFFFF",
-    fontSize: 14,
+    width: 20,
+    height: 20,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
   },
+  responseBox: {
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    marginTop: 10,
+    padding: "10px 14px",
+    borderRadius: 10,
+    background: "rgba(52, 211, 153, 0.06)",
+    border: "1px solid rgba(52, 211, 153, 0.22)",
+  },
+  responseText: {
+    fontFamily: "var(--font-mono)",
+    fontSize: 12,
+    color: "rgba(160, 240, 200, 0.9)",
+  },
+  locationPanel: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: 0,
+    overflow: "hidden",
+    borderRadius: 18,
+  },
+  locationInfo: {
+    flex: "1 1 280px",
+    display: "flex",
+    flexDirection: "column",
+    gap: 10,
+    padding: "32px 34px",
+  },
+  locationHeading: {
+    fontFamily: "var(--font-display)",
+    fontWeight: 700,
+    fontSize: 21,
+    color: "#fff",
+    letterSpacing: "-0.01em",
+  },
+  coords: {
+    fontFamily: "var(--font-mono)",
+    fontSize: 12.5,
+    color: "rgba(255, 165, 75, 0.75)",
+    letterSpacing: "0.05em",
+  },
+  locationCity: {
+    fontSize: 16,
+    fontWeight: 600,
+    color: "rgba(245, 238, 230, 0.9)",
+  },
+  locationNote: {
+    fontSize: 14,
+    lineHeight: 1.6,
+    color: "var(--muted)",
+    flex: 1,
+  },
+  mapLink: {
+    alignSelf: "flex-start",
+    padding: "10px 20px",
+    fontSize: 14,
+    marginTop: 12,
+  },
+  mapWrap: {
+    position: "relative",
+    flex: "2 1 420px",
+    minHeight: 320,
+    borderLeft: "1px solid rgba(255, 122, 47, 0.15)",
+  },
+  mapFrame: {
+    position: "absolute",
+    inset: 0,
+    width: "100%",
+    height: "100%",
+    border: "none",
+    filter: "invert(92%) grayscale(45%) sepia(30%) contrast(88%)",
+  },
+  mapEdgeGlow: {
+    position: "absolute",
+    inset: 0,
+    pointerEvents: "none",
+    boxShadow: "inset 0 0 60px rgba(10, 6, 4, 0.55)",
+  },
   credits: {
     display: "flex",
     flexDirection: "column",
-    gap: 32,
+    gap: 28,
   },
   divider: {
     width: "100%",
     height: 1,
-    background: "rgba(255,255,255,0.2)",
+    background: "linear-gradient(90deg, transparent, rgba(255, 130, 55, 0.3), transparent)",
   },
   creditRow: {
     display: "flex",
@@ -325,37 +495,19 @@ const styles: Record<string, React.CSSProperties> = {
     flexWrap: "wrap",
     gap: 16,
   },
-  textarea: {
-    background: "transparent",
-    border: "1px solid rgba(255,255,255,0.3)",
-    padding: "10px",
-    fontFamily: "'Inter', sans-serif",
-    fontSize: 16,
-    color: "#FFFFFF",
-    borderRadius: 8,
-    outline: "none",
-    minHeight: 80,
-    resize: "none",
-  },
   copyright: {
-    fontFamily: "'Inter', sans-serif",
-    fontWeight: 400,
-    fontSize: 16,
-    lineHeight: 1.5,
-    color: "#FFFFFF",
+    fontSize: 14,
+    color: "var(--faint)",
   },
-  footerLinks: {
-    display: "flex",
-    gap: 24,
+  builtWith: {
+    fontFamily: "var(--font-mono)",
+    fontSize: 12.5,
+    color: "rgba(255, 155, 70, 0.55)",
   },
-  footerLink: {
-    fontFamily: "'Inter', sans-serif",
-    fontWeight: 400,
-    fontSize: 16,
-    lineHeight: 1.5,
-    color: "#FFFFFF",
-    textDecoration: "underline",
-    cursor: "pointer",
+  emailLink: {
+    fontFamily: "var(--font-mono)",
+    fontSize: 13.5,
+    color: "rgba(255, 210, 175, 0.85)",
   },
 };
 
