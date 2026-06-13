@@ -6,6 +6,7 @@ const navLinks = [
   { label: "Process", id: "process" },
   { label: "Work", id: "work" },
   { label: "Why us", id: "why" },
+  { label: "Team", id: "team" },
 ];
 
 const Navbar: React.FC = () => {

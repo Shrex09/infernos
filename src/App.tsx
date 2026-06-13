@@ -9,6 +9,7 @@ import Work from "./components/Work";
 import Stats from "./components/Stats";
 import WhyUs from "./components/WhyUs";
 import Testimonials from "./components/Testimonials";
+import Team from "./components/Team";
 import CTABand from "./components/CTABand";
 import Footer from "./components/Footer";
 
@@ -25,6 +26,7 @@ const App: React.FC = () => {
       <Stats />
       <WhyUs />
       <Testimonials />
+      <Team />
       <CTABand />
       <Footer />
     </div>

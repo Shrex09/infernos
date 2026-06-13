@@ -13,6 +13,14 @@ interface Project {
 
 const projects: Project[] = [
   {
+    title: "Yashraj Business Group",
+    desc: "Premium architectural business solutions, job portals, and professional services.",
+    video: "/yashraj.mp4",
+    link: "https://www.yashrajbusinessgroup.com/",
+    domain: "yashrajbusinessgroup.com",
+    features: ["Premium architectural solutions", "Integrated job portal", "Professional services showcase"],
+  },
+  {
     title: "Prerna Sarees",
     desc: "E-commerce platform for a saree brand — full catalog, category browsing and a fast, mobile-first shopping flow.",
     video: "/prernasarees.mp4",

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import emailjs from "@emailjs/browser";
 
 type SendState = "idle" | "sending" | "sent" | "error";
 
@@ -27,27 +26,45 @@ const focusOff = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) =
 };
 
 const Footer: React.FC = () => {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [state, setState] = useState<SendState>("idle");
 
-  const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-  const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-  const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+  // This will be the URL of your deployed Google Apps Script
+  const scriptUrl = import.meta.env.VITE_GOOGLE_SHEET_URL;
 
   const handleSubmit = async () => {
-    if (!email || !message) {
+    if (!name || !phone || !email || !message) {
       setState("error");
       return;
     }
-    if (!serviceId || !templateId || !publicKey) {
+    if (!scriptUrl) {
+      console.error("Missing VITE_GOOGLE_SHEET_URL in your .env.local file");
       setState("error");
       return;
     }
+    
     try {
       setState("sending");
-      await emailjs.send(serviceId, templateId, { user_email: email, message }, publicKey);
+      
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("phone", phone);
+      formData.append("email", email);
+      formData.append("message", message);
+
+      // We use no-cors so Google accepts the cross-origin POST request directly
+      await fetch(scriptUrl, {
+        method: "POST",
+        body: formData,
+        mode: "no-cors",
+      });
+      
       setState("sent");
+      setName("");
+      setPhone("");
       setEmail("");
       setMessage("");
     } catch (error) {
@@ -82,6 +99,28 @@ const Footer: React.FC = () => {
             </p>
 
             <div style={styles.form}>
+              <label style={styles.label}>your_name</label>
+              <input
+                type="text"
+                placeholder="John Doe"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onFocus={focusOn}
+                onBlur={focusOff}
+                style={inputBase}
+              />
+
+              <label style={styles.label}>your_phone</label>
+              <input
+                type="tel"
+                placeholder="+1 234 567 8900"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                onFocus={focusOn}
+                onBlur={focusOff}
+                style={inputBase}
+              />
+
               <label style={styles.label}>your_email</label>
               <input
                 type="email"
