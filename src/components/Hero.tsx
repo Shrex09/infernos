@@ -238,11 +238,6 @@ const Hero: React.FC = () => (
       </div>
     </div>
 
-    <div style={styles.scrollHint}>
-      <div style={styles.scrollPill}>
-        <div style={styles.scrollDot} />
-      </div>
-    </div>
   </section>
 );
 
