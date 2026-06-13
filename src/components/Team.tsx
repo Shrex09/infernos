@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import { useReveal, revealStyle } from "../hooks";
 
 interface Member {
@@ -132,6 +132,7 @@ const Team: React.FC = () => {
 
   const [selectedId, setSelectedId] = useState<string>(dailyTeam[0].id);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const statsRef = useRef<HTMLDivElement>(null);
 
   const selectedMember = dailyTeam.find((m) => m.id === selectedId) || dailyTeam[0];
 
@@ -147,7 +148,7 @@ const Team: React.FC = () => {
           </h2>
         </div>
 
-        <div style={styles.arcadeBox}>
+        <div className="arcade-box">
 
           {/* Character Grid */}
           <div className="team-grid">
@@ -157,6 +158,14 @@ const Team: React.FC = () => {
                 <div
                   key={member.id}
                   onMouseEnter={() => setSelectedId(member.id)}
+                  onClick={() => {
+                    setSelectedId(member.id);
+                    if (window.innerWidth <= 860) {
+                      setTimeout(() => {
+                        statsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      }, 50);
+                    }
+                  }}
                   style={{
                     ...styles.charSlot,
                     borderColor: isSelected ? member.mainColor : "rgba(255, 255, 255, 0.1)",
@@ -182,7 +191,7 @@ const Team: React.FC = () => {
           </div>
 
           {/* Stats Panel */}
-          <div style={{ ...styles.statsPanel, borderColor: selectedMember.mainColor, boxShadow: `inset 0 0 30px ${selectedMember.mainColor}22` }}>
+          <div ref={statsRef} style={{ ...styles.statsPanel, borderColor: selectedMember.mainColor, boxShadow: `inset 0 0 30px ${selectedMember.mainColor}22` }}>
             {isPlaying ? (
               <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
                 <button
@@ -269,13 +278,6 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: "center",
     textAlign: "center",
     marginBottom: 60,
-  },
-  arcadeBox: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: 40,
-    alignItems: "center",
-    justifyContent: "center",
   },
   gridContainer: {
     display: "grid",
