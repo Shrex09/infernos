@@ -113,7 +113,7 @@ const Footer: React.FC = () => {
               <label style={styles.label}>your_phone</label>
               <input
                 type="tel"
-                placeholder="+1 234 567 8900"
+                placeholder="+91 1234 567 8900"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 onFocus={focusOn}

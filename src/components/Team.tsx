@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { useReveal, revealStyle } from "../hooks";
 
 interface Member {
@@ -130,11 +130,30 @@ const Team: React.FC = () => {
     return shuffled;
   }, []);
 
-  const [selectedId, setSelectedId] = useState<string>(dailyTeam[0].id);
+  const [selectedId, setSelectedId] = useState<string | null>(() => {
+    if (typeof window !== 'undefined' && window.innerWidth <= 860) return null;
+    return dailyTeam[0].id;
+  });
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const statsRef = useRef<HTMLDivElement>(null);
 
-  const selectedMember = dailyTeam.find((m) => m.id === selectedId) || dailyTeam[0];
+  // Auto-rotate selected member every 4 seconds
+  useEffect(() => {
+    if (!selectedId || isPlaying) return;
+
+    const timer = setInterval(() => {
+      setSelectedId((current) => {
+        if (!current) return dailyTeam[0].id;
+        const currentIndex = dailyTeam.findIndex((m) => m.id === current);
+        const nextIndex = (currentIndex + 1) % dailyTeam.length;
+        return dailyTeam[nextIndex].id;
+      });
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, [selectedId, isPlaying, dailyTeam]);
+
+  const selectedMember = selectedId ? dailyTeam.find((m) => m.id === selectedId) : null;
 
   return (
     <section id="team" className="section" style={styles.section}>
@@ -191,6 +210,7 @@ const Team: React.FC = () => {
           </div>
 
           {/* Stats Panel */}
+          {selectedMember && (
           <div ref={statsRef} style={{ ...styles.statsPanel, borderColor: selectedMember.mainColor, boxShadow: `inset 0 0 30px ${selectedMember.mainColor}22` }}>
             {isPlaying ? (
               <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
@@ -213,7 +233,7 @@ const Team: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <>
+              <div key={selectedMember.id} className="fade-in" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                 <div style={styles.statsHeader}>
                   <h3 style={{ ...styles.fighterName, color: selectedMember.mainColor, textShadow: `0 0 15px ${selectedMember.mainColor}88, 2px 2px 0 rgba(0,0,0,0.8)` }}>{selectedMember.name}</h3>
                   <span style={styles.fighterRole}>{selectedMember.role}</span>
@@ -240,14 +260,16 @@ const Team: React.FC = () => {
                 </div>
 
                 <button
+                  className="hide-mobile"
                   onClick={() => setIsPlaying(true)}
                   style={{ ...styles.insertCoin, color: selectedMember.mainColor }}
                 >
                   P1 READY. PRESS START.
                 </button>
-              </>
+              </div>
             )}
           </div>
+          )}
 
         </div>
       </div>
