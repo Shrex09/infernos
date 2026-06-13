@@ -15,7 +15,7 @@ const projects: Project[] = [
   {
     title: "Yashraj Business Group",
     desc: "Premium architectural business solutions, job portals, and professional services.",
-    video: "/yashraj.mp4",
+    video: "/compressed_yashraj.mp4",
     link: "https://www.yashrajbusinessgroup.com/",
     domain: "yashrajbusinessgroup.com",
     features: ["Premium architectural solutions", "Integrated job portal", "Professional services showcase"],
@@ -23,7 +23,7 @@ const projects: Project[] = [
   {
     title: "Prerna Sarees",
     desc: "E-commerce platform for a saree brand — full catalog, category browsing and a fast, mobile-first shopping flow.",
-    video: "/prernasarees.mp4",
+    video: "/compressed_prernasarees.mp4",
     link: "https://prernasaree.com/",
     domain: "prernasaree.com",
     features: ["Product catalog with rich visuals", "Category-based browsing", "Optimized for mobile shoppers"],
@@ -31,7 +31,7 @@ const projects: Project[] = [
   {
     title: "Shubharambh Events",
     desc: "Event management site showcasing services and past events, built to convert visitors into inquiries.",
-    video: "/shubharambh.mp4",
+    video: "/compressed_shubharambh.mp4",
     link: "https://www.shubharambhevents.co.in/",
     domain: "shubharambhevents.co.in",
     features: ["Service showcase with media", "Inquiry-optimized layout", "Responsive across devices"],
@@ -39,7 +39,7 @@ const projects: Project[] = [
   {
     title: "Muscle Build Nutrition",
     desc: "Performance-focused supplement store with structured product data and a fast purchase path.",
-    video: "/mb.mp4",
+    video: "/compressed_mb.mp4",
     link: "https://www.musclebuildnutrition.co.in/",
     domain: "musclebuildnutrition.co.in",
     features: ["Detailed supplement catalog", "Fast browsing & checkout flow", "Clear category navigation"],
@@ -47,7 +47,7 @@ const projects: Project[] = [
   {
     title: "Developer Portfolio",
     desc: "Interactive developer portfolio with video previews, smooth animations and a component-based architecture.",
-    video: "/portfolio.mp4",
+    video: "/compressed_portfolio.mp4",
     link: "https://amit-lad-portfolio-dev.vercel.app/",
     domain: "vercel.app",
     features: ["Video & image project previews", "Modern animated UI", "Scalable component architecture"],
@@ -55,7 +55,7 @@ const projects: Project[] = [
   {
     title: "Mayur Nursery",
     desc: "E-commerce plant platform with catalog, care guides and inventory management for a growing nursery.",
-    video: "/m1.mp4",
+    video: "/compressed_m1.mp4",
     link: "https://mayurnursery.in.net/?i=2",
     domain: "mayurnursery.in.net",
     features: ["Product catalog", "Plant care guides", "Inventory management"],
