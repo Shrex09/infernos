@@ -7,6 +7,7 @@ const clients = [
   "Mayur Nursery",
   "MediCore",
   "MGTech Systems",
+  "Yashraj Business Group",
 ];
 
 const TrustBar: React.FC = () => (

@@ -45,10 +45,10 @@ const Footer: React.FC = () => {
       setState("error");
       return;
     }
-    
+
     try {
       setState("sending");
-      
+
       const formData = new FormData();
       formData.append("name", name);
       formData.append("phone", phone);
@@ -61,7 +61,7 @@ const Footer: React.FC = () => {
         body: formData,
         mode: "no-cors",
       });
-      
+
       setState("sent");
       setName("");
       setPhone("");
@@ -233,7 +233,7 @@ const Footer: React.FC = () => {
                       </svg>
                     ),
                     name: "WhatsApp",
-                    href: "https://wa.me/9021191174",
+                    href: "https://wa.me/7774942956",
                   },
                   {
                     icon: (

@@ -373,7 +373,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   statLabel: {
     fontFamily: "monospace",
-    width: 80,
+    width: 130,
     fontSize: 13,
     color: "#fff",
     textTransform: "uppercase",
