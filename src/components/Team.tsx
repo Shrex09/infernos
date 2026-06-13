@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useReveal, revealStyle } from "../hooks";
 
 interface Member {
@@ -12,8 +12,22 @@ interface Member {
 }
 
 const team: Member[] = [
+
   {
     id: "p1",
+    name: "Shreyash",
+    role: "The Logic Sovereign",
+    avatar: "/shreyas.png",
+    mainColor: "#6366f1",
+    bio: "Supreme authority over systems, architecture, and technical decisions. Commands APIs, databases, and infrastructure while forging the logic that powers every project.",
+    stats: [
+      { label: "Architecture", value: 100, color: "#6366f1" },
+      { label: "Leadership", value: 95, color: "#818cf8" },
+      { label: "Logic Mastery", value: 99, color: "#4338ca" },
+    ],
+  },
+  {
+    id: "p2",
     name: "Amit",
     role: "All Rounder / Unrivaled",
     avatar: "/amit.png",
@@ -26,47 +40,60 @@ const team: Member[] = [
     ],
   },
   {
-    id: "p2",
-    name: "Player 2",
-    role: "UI Sorcerer",
-    avatar: "/2.png",
-    mainColor: "#f472b6",
-    bio: "Weaves intricate CSS spells to bend pixels to their will. Ultimate move: Centering a div without googling.",
-    stats: [
-      { label: "Aesthetics", value: 100, color: "#f472b6" },
-      { label: "Speed", value: 85, color: "#f9a8d4" },
-      { label: "CSS Magic", value: 98, color: "#db2777" },
-    ],
-  },
-  {
     id: "p3",
-    name: "Player 3",
-    role: "Bug Hunter",
-    avatar: "/3.png",
-    mainColor: "#fbbf24",
-    bio: "Relentless pursuer of edge cases. Thrives in chaos and console logs. Passive skill: 'It works on my machine'.",
+    name: "Sai",
+    role: "The Tri-Realm Sorceress",
+    avatar: "/sai.png",
+    mainColor: "#ec4899",
+    bio: "Master of the three domains: Frontend, Backend, and Mobile. Why specialize in one realm when you can build the entire universe?",
     stats: [
-      { label: "Debugging", value: 99, color: "#fbbf24" },
-      { label: "Patience", value: 90, color: "#fcd34d" },
-      { label: "Chaos", value: 85, color: "#d97706" },
+      { label: "Backend", value: 97, color: "#ec4899" },
+      { label: "Frontend", value: 94, color: "#f472b6" },
+      { label: "Mobile", value: 99, color: "#be185d" },
     ],
   },
   {
     id: "p4",
-    name: "Player 4",
-    role: "Data Wrangler",
-    avatar: "/4.png",
-    mainColor: "#60a5fa",
-    bio: "Extracts truth from endless streams of data. Weapon of choice: Complex SQL queries.",
+    name: "Yogini",
+    role: "The Service Sorceress",
+    avatar: "/yogini.jpeg",
+    mainColor: "#d946ef",
+    bio: "Conjures APIs and orchestrates complex systems with arcane precision. Ultimate move: Connecting services so seamlessly that they appear to communicate by magic.",
     stats: [
-      { label: "Analysis", value: 92, color: "#60a5fa" },
-      { label: "Accuracy", value: 95, color: "#93c5fd" },
-      { label: "Queries", value: 88, color: "#2563eb" },
+      { label: "API Mastery", value: 100, color: "#d946ef" },
+      { label: "System Design", value: 97, color: "#e879f9" },
+      { label: "Backend Magic", value: 99, color: "#a21caf" },
     ],
   },
   {
     id: "p5",
-    name: "Player 5",
+    name: "ATHARVA",
+    role: "Cloud Ninja",
+    avatar: "/5.png",
+    mainColor: "#a78bfa",
+    bio: "Masters the servers in the sky. Deploys apps without downtime. Ultimate move: Container orchestration.",
+    stats: [
+      { label: "DevOps", value: 96, color: "#a78bfa" },
+      { label: "Uptime", value: 99, color: "#c4b5fd" },
+      { label: "Scaling", value: 90, color: "#8b5cf6" },
+    ],
+  },
+  {
+    id: "p6",
+    name: "SOHAM",
+    role: "Cloud Ninja",
+    avatar: "/5.png",
+    mainColor: "#a78bfa",
+    bio: "Masters the servers in the sky. Deploys apps without downtime. Ultimate move: Container orchestration.",
+    stats: [
+      { label: "DevOps", value: 96, color: "#a78bfa" },
+      { label: "Uptime", value: 99, color: "#c4b5fd" },
+      { label: "Scaling", value: 90, color: "#8b5cf6" },
+    ],
+  },
+  {
+    id: "p7",
+    name: "SARTHAK",
     role: "Cloud Ninja",
     avatar: "/5.png",
     mainColor: "#a78bfa",
@@ -81,10 +108,32 @@ const team: Member[] = [
 
 const Team: React.FC = () => {
   const head = useReveal();
-  const [selectedId, setSelectedId] = useState<string>(team[0].id);
+
+  // Create a daily shuffled team so no one fights over P1!
+  const dailyTeam = useMemo(() => {
+    const today = new Date();
+    // UTC date ensures everyone worldwide sees the same order today
+    const seed = today.getUTCFullYear() * 10000 + (today.getUTCMonth() + 1) * 100 + today.getUTCDate();
+
+    let currentSeed = seed;
+    // Simple pseudo-random number generator (LCG)
+    const random = () => {
+      currentSeed = (currentSeed * 1664525 + 1013904223) % 4294967296;
+      return currentSeed / 4294967296;
+    };
+
+    const shuffled = [...team];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }, []);
+
+  const [selectedId, setSelectedId] = useState<string>(dailyTeam[0].id);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
-  const selectedMember = team.find((m) => m.id === selectedId) || team[0];
+  const selectedMember = dailyTeam.find((m) => m.id === selectedId) || dailyTeam[0];
 
   return (
     <section id="team" className="section" style={styles.section}>
@@ -101,8 +150,8 @@ const Team: React.FC = () => {
         <div style={styles.arcadeBox}>
 
           {/* Character Grid */}
-          <div style={styles.gridContainer}>
-            {team.map((member) => {
+          <div className="team-grid">
+            {dailyTeam.map((member) => {
               const isSelected = selectedId === member.id;
               return (
                 <div

@@ -352,3 +352,21 @@ section[id], footer[id] {
     display: none !important;
   }
 }
+
+/* ────────────────────────────────────────
+   TEAM SECTION GRID
+──────────────────────────────────────── */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  flex: 1 1 300px;
+  max-width: 400px;
+}
+
+@media (min-width: 860px) {
+  .team-grid {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 600px;
+  }
+}
