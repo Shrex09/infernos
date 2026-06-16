@@ -148,7 +148,7 @@ const Team: React.FC = () => {
         const nextIndex = (currentIndex + 1) % dailyTeam.length;
         return dailyTeam[nextIndex].id;
       });
-    }, 4000);
+    }, 8000);
 
     return () => clearInterval(timer);
   }, [selectedId, isPlaying, dailyTeam]);
@@ -211,64 +211,64 @@ const Team: React.FC = () => {
 
           {/* Stats Panel */}
           {selectedMember && (
-          <div ref={statsRef} style={{ ...styles.statsPanel, borderColor: selectedMember.mainColor, boxShadow: `inset 0 0 30px ${selectedMember.mainColor}22` }}>
-            {isPlaying ? (
-              <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-                <button
-                  onClick={() => setIsPlaying(false)}
-                  style={{ ...styles.closeGameBtn, borderColor: selectedMember.mainColor, color: selectedMember.mainColor }}
-                >
-                  [ X ] EXIT GAME
-                </button>
-                <div style={{ flex: 1, position: "relative", minHeight: 400, borderRadius: 8, overflow: "hidden", border: `2px solid ${selectedMember.mainColor}` }}>
-                  <iframe
-                    src="https://macek.github.io/google_pacman/"
-                    width="100%"
-                    height="100%"
-                    frameBorder="0"
-                    scrolling="no"
-                    style={{ background: "#000", position: "absolute", inset: 0 }}
-                    title="Pacman"
-                  />
+            <div ref={statsRef} style={{ ...styles.statsPanel, borderColor: selectedMember.mainColor, boxShadow: `inset 0 0 30px ${selectedMember.mainColor}22` }}>
+              {isPlaying ? (
+                <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+                  <button
+                    onClick={() => setIsPlaying(false)}
+                    style={{ ...styles.closeGameBtn, borderColor: selectedMember.mainColor, color: selectedMember.mainColor }}
+                  >
+                    [ X ] EXIT GAME
+                  </button>
+                  <div style={{ flex: 1, position: "relative", minHeight: 400, borderRadius: 8, overflow: "hidden", border: `2px solid ${selectedMember.mainColor}` }}>
+                    <iframe
+                      src="https://macek.github.io/google_pacman/"
+                      width="100%"
+                      height="100%"
+                      frameBorder="0"
+                      scrolling="no"
+                      style={{ background: "#000", position: "absolute", inset: 0 }}
+                      title="Pacman"
+                    />
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div key={selectedMember.id} className="fade-in" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                <div style={styles.statsHeader}>
-                  <h3 style={{ ...styles.fighterName, color: selectedMember.mainColor, textShadow: `0 0 15px ${selectedMember.mainColor}88, 2px 2px 0 rgba(0,0,0,0.8)` }}>{selectedMember.name}</h3>
-                  <span style={styles.fighterRole}>{selectedMember.role}</span>
-                </div>
+              ) : (
+                <div key={selectedMember.id} className="fade-in" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                  <div style={styles.statsHeader}>
+                    <h3 style={{ ...styles.fighterName, color: selectedMember.mainColor, textShadow: `0 0 15px ${selectedMember.mainColor}88, 2px 2px 0 rgba(0,0,0,0.8)` }}>{selectedMember.name}</h3>
+                    <span style={styles.fighterRole}>{selectedMember.role}</span>
+                  </div>
 
-                <p style={styles.bio}>{selectedMember.bio}</p>
+                  <p style={styles.bio}>{selectedMember.bio}</p>
 
-                <div style={styles.statsBars}>
-                  {selectedMember.stats.map((stat, i) => (
-                    <div key={i} style={styles.statRow}>
-                      <span style={styles.statLabel}>{stat.label}</span>
-                      <div style={styles.barTrack}>
-                        <div
-                          style={{
-                            ...styles.barFill,
-                            width: `${stat.value}%`,
-                            backgroundColor: stat.color,
-                            boxShadow: `0 0 10px ${stat.color}`,
-                          }}
-                        />
+                  <div style={styles.statsBars}>
+                    {selectedMember.stats.map((stat, i) => (
+                      <div key={i} style={styles.statRow}>
+                        <span style={styles.statLabel}>{stat.label}</span>
+                        <div style={styles.barTrack}>
+                          <div
+                            style={{
+                              ...styles.barFill,
+                              width: `${stat.value}%`,
+                              backgroundColor: stat.color,
+                              boxShadow: `0 0 10px ${stat.color}`,
+                            }}
+                          />
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
 
-                <button
-                  className="hide-mobile"
-                  onClick={() => setIsPlaying(true)}
-                  style={{ ...styles.insertCoin, color: selectedMember.mainColor }}
-                >
-                  P1 READY. PRESS START.
-                </button>
-              </div>
-            )}
-          </div>
+                  <button
+                    className="hide-mobile"
+                    onClick={() => setIsPlaying(true)}
+                    style={{ ...styles.insertCoin, color: selectedMember.mainColor }}
+                  >
+                    P1 READY. PRESS START.
+                  </button>
+                </div>
+              )}
+            </div>
           )}
 
         </div>
