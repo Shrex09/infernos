@@ -4,7 +4,7 @@ import { useReveal, revealStyle } from "../hooks";
 const groups = [
   {
     label: "frontend/",
-    items: ["React", "TypeScript", "Next.js", "Vite", "Tailwind"],
+    items: ["React", "TypeScript", "Next.js", "Vite", "Tailwind", "Flutter"],
   },
   {
     label: "backend/",
@@ -119,7 +119,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: "center",
     gap: 10,
     paddingBottom: 14,
-    borderBottom: "1px solid rgba(255,255,255,0.07)",
+    borderBottom: "1px solid rgba(0,0,0,0.07)",
   },
   folderIcon: {
     color: "var(--amber)",
@@ -152,7 +152,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   itemName: {
     fontSize: 15,
-    color: "rgba(245, 238, 230, 0.82)",
+    color: "var(--muted)",
     fontWeight: 500,
   },
   noteRow: {

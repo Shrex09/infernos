@@ -82,12 +82,12 @@ const HeroGlobe: React.FC = () => {
       ctx.clearRect(0, 0, w, h);
 
       // Mesh lines — brighter at the front, ghosted at the back
-      ctx.lineWidth = 0.6;
+      ctx.lineWidth = 1.0;
       for (const [a, b] of links) {
         const pa = proj[a];
         const pb = proj[b];
         const front = 1 - (pa.z + pb.z) / 2; // 0 back … 2 front
-        ctx.strokeStyle = `rgba(255, 130, 55, ${0.03 + front * 0.09})`;
+        ctx.strokeStyle = `rgba(220, 90, 30, ${0.06 + front * 0.22})`;
         ctx.beginPath();
         ctx.moveTo(pa.sx, pa.sy);
         ctx.lineTo(pb.sx, pb.sy);
@@ -97,9 +97,9 @@ const HeroGlobe: React.FC = () => {
       // Nodes
       for (const p of proj) {
         const front = (1 - p.z) / 2; // 1 front, 0 back
-        ctx.fillStyle = `rgba(255, ${125 + front * 85}, ${55 + front * 40}, ${0.18 + front * 0.6})`;
+        ctx.fillStyle = `rgba(220, ${80 + front * 100}, ${20 + front * 30}, ${0.3 + front * 0.65})`;
         ctx.beginPath();
-        ctx.arc(p.sx, p.sy, 0.8 + p.s * 1.1 * front + 0.4, 0, Math.PI * 2);
+        ctx.arc(p.sx, p.sy, 1.2 + p.s * 1.5 * front + 0.5, 0, Math.PI * 2);
         ctx.fill();
       }
 
@@ -168,7 +168,7 @@ const TypeLine: React.FC = () => {
 
   return (
     <div style={styles.terminalLine}>
-      <span style={{ color: "#34d399" }}>$</span>
+      <span style={{ color: "var(--accent-bright)" }}>$</span>
       <span style={styles.terminalText}>{text}</span>
       <span className="cursor-blink" />
     </div>
@@ -250,20 +250,24 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: "center",
     padding: "140px 24px 100px",
     overflow: "hidden",
-    background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(170, 55, 12, 0.22), transparent 60%), #0a0605",
+    background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(170, 55, 12, 0.22), transparent 60%), var(--bg)",
   },
   canvas: {
     position: "absolute",
-    inset: 0,
-    width: "100%",
-    height: "100%",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "min(100vw, 100vh)",
+    height: "min(100vw, 100vh)",
     opacity: 0.9,
+    pointerEvents: "none",
   },
   vignette: {
     position: "absolute",
     inset: 0,
-    background: "radial-gradient(ellipse 55% 50% at 50% 50%, rgba(10, 6, 4, 0.82) 0%, rgba(10, 6, 4, 0.35) 55%, transparent 100%)",
+    background: "radial-gradient(ellipse 55% 50% at 50% 50%, var(--bg) 0%, rgba(0,0,0,0) 70%)",
     pointerEvents: "none",
+    opacity: 0.82,
   },
   glowTop: {
     position: "absolute",
@@ -297,7 +301,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "var(--font-mono)",
     fontSize: 13,
     fontWeight: 500,
-    color: "rgba(245, 238, 230, 0.85)",
+    color: "var(--muted)",
     letterSpacing: "0.04em",
   },
   heading: {
@@ -306,7 +310,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: "clamp(36px, 6.4vw, 78px)",
     lineHeight: 1.08,
     letterSpacing: "-0.015em",
-    color: "#fff",
+    color: "var(--text)",
     textShadow: "0 0 60px rgba(255, 90, 30, 0.35)",
   },
   sub: {
@@ -323,7 +327,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 14,
     padding: "10px 20px",
     borderRadius: 10,
-    background: "rgba(16, 9, 6, 0.7)",
+    background: "var(--bg-2)",
     border: "1px solid rgba(255, 130, 55, 0.18)",
     backdropFilter: "blur(8px)",
     minHeight: 42,
@@ -331,7 +335,7 @@ const styles: Record<string, React.CSSProperties> = {
     overflow: "hidden",
   },
   terminalText: {
-    color: "rgba(255, 210, 175, 0.92)",
+    color: "#e8431c",
     whiteSpace: "nowrap",
   },
   actions: {
@@ -351,7 +355,7 @@ const styles: Record<string, React.CSSProperties> = {
   metricDivider: {
     width: 1,
     height: 36,
-    background: "linear-gradient(180deg, transparent, rgba(255,255,255,0.18), transparent)",
+    background: "linear-gradient(180deg, transparent, rgba(0,0,0,0.18), transparent)",
   },
   metric: {
     display: "flex",
@@ -363,7 +367,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "var(--font-mono)",
     fontWeight: 600,
     fontSize: 22,
-    color: "#fff",
+    color: "var(--text)",
   },
   metricLabel: {
     fontSize: 12.5,
@@ -381,7 +385,7 @@ const styles: Record<string, React.CSSProperties> = {
     width: 24,
     height: 40,
     borderRadius: 14,
-    border: "1.5px solid rgba(255,255,255,0.25)",
+    border: "1.5px solid rgba(0,0,0,0.25)",
     display: "flex",
     justifyContent: "center",
     paddingTop: 7,

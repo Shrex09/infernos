@@ -48,7 +48,7 @@ const Stats: React.FC = () => {
 
 const styles: Record<string, React.CSSProperties> = {
   section: {
-    background: "linear-gradient(180deg, var(--bg) 0%, #200d04 50%, var(--bg) 100%)",
+    background: "linear-gradient(180deg, var(--bg) 0%, rgba(255, 120, 40, 0.06) 50%, var(--bg) 100%)",
     padding: "80px 64px",
     overflow: "hidden",
   },
@@ -59,7 +59,7 @@ const styles: Record<string, React.CSSProperties> = {
     transform: "translate(-50%, -50%)",
     width: 900,
     height: 400,
-    background: "radial-gradient(ellipse, rgba(255, 105, 35, 0.14), transparent 65%)",
+    background: "radial-gradient(ellipse, rgba(255, 105, 35, 0.18), transparent 65%)",
     filter: "blur(40px)",
     pointerEvents: "none",
   },
@@ -79,8 +79,8 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 600,
     fontSize: "clamp(40px, 4.5vw, 58px)",
     lineHeight: 1.1,
-    color: "#fff",
-    textShadow: "0 0 40px rgba(255, 122, 47, 0.5)",
+    color: "var(--text)",
+    textShadow: "0 0 40px rgba(255, 122, 47, 0.25)",
   },
   suffix: {
     backgroundImage: "linear-gradient(100deg, #ff6a2b, #ffa53c)",
@@ -92,7 +92,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "var(--font-display)",
     fontWeight: 600,
     fontSize: 15,
-    color: "rgba(245, 238, 230, 0.9)",
+    color: "var(--text)",
     letterSpacing: "0.01em",
     marginTop: 6,
   },

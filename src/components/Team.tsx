@@ -18,12 +18,12 @@ const team: Member[] = [
     name: "Shreyash",
     role: "The Logic Sovereign",
     avatar: "/shreyas1.png",
-    mainColor: "#6366f1",
+    mainColor: "#ff6a2b",
     bio: "Supreme authority over systems, architecture, and technical decisions. Commands APIs, databases, and infrastructure while forging the logic that powers every project.",
     stats: [
-      { label: "Architecture", value: 100, color: "#6366f1" },
-      { label: "Leadership", value: 95, color: "#818cf8" },
-      { label: "Logic Mastery", value: 99, color: "#4338ca" },
+      { label: "Architecture", value: 100, color: "#ff6a2b" },
+      { label: "Leadership", value: 95, color: "#ffa53c" },
+      { label: "Logic Mastery", value: 99, color: "#e8431c" },
     ],
   },
   {
@@ -31,12 +31,12 @@ const team: Member[] = [
     name: "Amit",
     role: "All Rounder / Unrivaled",
     avatar: "/amit1.png",
-    mainColor: "#ff003c",
+    mainColor: "#ff2200",
     bio: "The undisputed master of every stack. Best in everything, with no competition anywhere near. Passive skill: Absolute Domination.",
     stats: [
-      { label: "Logic", value: 100, color: "#ff003c" },
-      { label: "Speed", value: 100, color: "#ff4d79" },
-      { label: "Power", value: 100, color: "#cc0030" },
+      { label: "Logic", value: 100, color: "#ff2200" },
+      { label: "Speed", value: 100, color: "#ff5533" },
+      { label: "Power", value: 100, color: "#cc1a00" },
     ],
   },
   {
@@ -44,12 +44,12 @@ const team: Member[] = [
     name: "Sai",
     role: "The Tri-Realm Sorceress",
     avatar: "/sai1.png",
-    mainColor: "#ec4899",
+    mainColor: "#ffc36b",
     bio: "Master of the three domains: Frontend, Backend, and Mobile. Why specialize in one realm when you can build the entire universe?",
     stats: [
-      { label: "Backend", value: 97, color: "#ec4899" },
-      { label: "Frontend", value: 94, color: "#f472b6" },
-      { label: "Mobile", value: 99, color: "#be185d" },
+      { label: "Backend", value: 97, color: "#ffc36b" },
+      { label: "Frontend", value: 94, color: "#ffda99" },
+      { label: "Mobile", value: 99, color: "#e8a030" },
     ],
   },
   {
@@ -57,12 +57,12 @@ const team: Member[] = [
     name: "Yogini",
     role: "The Service Sorceress",
     avatar: "/yogini1.png",
-    mainColor: "#d946ef",
+    mainColor: "#ff8c42",
     bio: "Conjures APIs and orchestrates complex systems with arcane precision. Ultimate move: Connecting services so seamlessly that they appear to communicate by magic.",
     stats: [
-      { label: "API Mastery", value: 100, color: "#d946ef" },
-      { label: "System Design", value: 97, color: "#e879f9" },
-      { label: "Backend Magic", value: 99, color: "#a21caf" },
+      { label: "API Mastery", value: 100, color: "#ff8c42" },
+      { label: "System Design", value: 97, color: "#ffaa6b" },
+      { label: "Backend Magic", value: 99, color: "#e06a1a" },
     ],
   },
   {
@@ -70,12 +70,12 @@ const team: Member[] = [
     name: "ATHARVA",
     role: "The Visual Alchemist",
     avatar: "/atharv.png",
-    mainColor: "#a78bfa",
+    mainColor: "#ffb347",
     bio: "Crafts immersive 3D experiences and stunning user interfaces. Merges art with technology to bring digital environments to life. Passive skill: 'Spatial Awareness'.",
     stats: [
-      { label: "UI/UX Design", value: 98, color: "#a78bfa" },
-      { label: "3D Modeling", value: 95, color: "#c4b5fd" },
-      { label: "Aesthetics", value: 97, color: "#8b5cf6" },
+      { label: "UI/UX Design", value: 98, color: "#ffb347" },
+      { label: "3D Modeling", value: 95, color: "#ffd080" },
+      { label: "Aesthetics", value: 97, color: "#e8902a" },
     ],
   },
   {
@@ -83,12 +83,12 @@ const team: Member[] = [
     name: "SOHAM",
     role: "Frontend Wizard",
     avatar: "/soham1.png",
-    mainColor: "#3b82f6",
+    mainColor: "#ff5500",
     bio: "Guardian of smooth interactions and flawless interfaces. Wields React, CSS, and animations to craft legendary user journeys. Passive skill: 'Pixel Perfect Precision'.",
     stats: [
-      { label: "UI Design", value: 96, color: "#3b82f6" },
-      { label: "Creativity", value: 92, color: "#60a5fa" },
-      { label: "Responsiveness", value: 98, color: "#1d4ed8" },
+      { label: "UI Design", value: 96, color: "#ff5500" },
+      { label: "Creativity", value: 92, color: "#ff7733" },
+      { label: "Responsiveness", value: 98, color: "#cc4400" },
     ],
   },
   {
@@ -96,12 +96,12 @@ const team: Member[] = [
     name: "SARTHAK",
     role: "Vision Architect",
     avatar: "/sarthak.png",
-    mainColor: "#06b6d4",
+    mainColor: "#ffa020",
     bio: "Dreams in startups, trains in AI, and treats every obstacle as a side quest. Known for turning late-night ideas into real-world projects. Passive skill: 'Infinite Grind' — gains momentum while others log off.",
     stats: [
-      { label: "Innovation", value: 97, color: "#06b6d4" },
-      { label: "Persistence", value: 99, color: "#22d3ee" },
-      { label: "Learning Speed", value: 94, color: "#0891b2" },
+      { label: "Innovation", value: 97, color: "#ffa020" },
+      { label: "Persistence", value: 99, color: "#ffbf55" },
+      { label: "Learning Speed", value: 94, color: "#d07a00" },
     ],
   },
 ];
@@ -161,7 +161,7 @@ const Team: React.FC = () => {
       <div className="section-inner" style={{ position: "relative", zIndex: 2 }}>
 
         <div ref={head.ref} style={{ ...styles.header, ...revealStyle(head.visible) }}>
-          <span className="kicker" style={{ color: "#7df0c0", letterSpacing: "0.2em" }}>SELECT YOUR FIGHTER</span>
+          <span className="kicker" style={{ color: "var(--amber)", letterSpacing: "0.2em" }}>SELECT YOUR FIGHTER</span>
           <h2 className="section-heading" style={{ fontFamily: "monospace", textTransform: "uppercase", textShadow: "4px 4px 0 rgba(232,67,28,0.5)" }}>
             Meet the <span className="text-gradient">Squad</span>
           </h2>
@@ -187,7 +187,7 @@ const Team: React.FC = () => {
                   }}
                   style={{
                     ...styles.charSlot,
-                    borderColor: isSelected ? member.mainColor : "rgba(255, 255, 255, 0.1)",
+                    borderColor: isSelected ? member.mainColor : "rgba(0, 0, 0, 0.1)",
                     boxShadow: isSelected ? `0 0 20px ${member.mainColor}66` : "none",
                     transform: isSelected ? "scale(1.05)" : "scale(1)",
                   }}
@@ -201,7 +201,7 @@ const Team: React.FC = () => {
                       <span style={{ ...styles.corner, bottom: -2, right: -2, borderBottom: `2px solid ${member.mainColor}`, borderRight: `2px solid ${member.mainColor}` }} />
                     </div>
                   )}
-                  <div style={{ ...styles.slotName, color: isSelected ? member.mainColor : "#fff", textShadow: isSelected ? `0 0 10px ${member.mainColor}` : "none" }}>
+                  <div style={{ ...styles.slotName, color: isSelected ? member.mainColor : "var(--text)", textShadow: isSelected ? `0 0 10px ${member.mainColor}` : "none" }}>
                     {member.name}
                   </div>
                 </div>
@@ -227,7 +227,7 @@ const Team: React.FC = () => {
                       height="100%"
                       frameBorder="0"
                       scrolling="no"
-                      style={{ background: "#000", position: "absolute", inset: 0 }}
+                      style={{ background: "#fff", position: "absolute", inset: 0 }}
                       title="Pacman"
                     />
                   </div>
@@ -279,7 +279,7 @@ const Team: React.FC = () => {
 
 const styles: Record<string, React.CSSProperties> = {
   section: {
-    background: "#0a0606",
+    background: "radial-gradient(ellipse 90% 60% at 60% 40%, rgba(255, 120, 40, 0.08), transparent 65%), var(--bg)",
     position: "relative",
     paddingTop: 100,
     paddingBottom: 100,
@@ -288,11 +288,12 @@ const styles: Record<string, React.CSSProperties> = {
   scanlines: {
     position: "absolute",
     inset: 0,
-    background: "linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06))",
-    backgroundSize: "100% 4px, 6px 100%",
+    backgroundImage:
+      "linear-gradient(rgba(255, 130, 55, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 130, 55, 0.04) 1px, transparent 1px)",
+    backgroundSize: "44px 44px",
     zIndex: 1,
     pointerEvents: "none",
-    opacity: 0.4,
+    opacity: 1,
   },
   header: {
     display: "flex",
@@ -310,15 +311,17 @@ const styles: Record<string, React.CSSProperties> = {
   },
   charSlot: {
     position: "relative",
-    background: "#1a1210",
-    border: "2px solid rgba(255, 255, 255, 0.1)",
-    borderRadius: 8,
+    background: "var(--bg-2)",
+    border: "1.5px solid var(--border)",
+    borderRadius: 14,
     cursor: "pointer",
-    transition: "all 0.2s ease-out",
+    transition: "all 0.22s ease-out",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     padding: "10px",
+    backdropFilter: "blur(8px)",
+    boxShadow: "0 2px 12px -4px rgba(0,0,0,0.08)",
   },
   avatarImg: {
     width: "100%",
@@ -350,19 +353,20 @@ const styles: Record<string, React.CSSProperties> = {
   statsPanel: {
     flex: "1 1 400px",
     maxWidth: 500,
-    background: "rgba(10, 5, 5, 0.8)",
+    background: "var(--bg-2)",
     border: "2px solid",
-    borderRadius: 12,
-    padding: 30,
+    borderRadius: 20,
+    padding: 32,
     position: "relative",
     display: "flex",
     flexDirection: "column",
     gap: 20,
-    backdropFilter: "blur(10px)",
+    backdropFilter: "blur(20px)",
     transition: "all 0.3s ease",
+    boxShadow: "0 20px 60px -20px rgba(232, 67, 28, 0.2), 0 4px 20px -4px rgba(0,0,0,0.08)",
   },
   statsHeader: {
-    borderBottom: "1px dashed rgba(255,255,255,0.2)",
+    borderBottom: "1px dashed rgba(255, 106, 43, 0.35)",
     paddingBottom: 15,
   },
   fighterName: {
@@ -370,19 +374,19 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 32,
     margin: 0,
     textTransform: "uppercase",
-    textShadow: "2px 2px 0 rgba(0,0,0,0.8)",
+    textShadow: "none",
   },
   fighterRole: {
     fontFamily: "var(--font-mono)",
     fontSize: 14,
-    color: "#aaa",
+    color: "rgba(255, 165, 60, 0.7)",
     textTransform: "uppercase",
     letterSpacing: "0.1em",
   },
   bio: {
     fontSize: 15,
     lineHeight: 1.6,
-    color: "rgba(255,255,255,0.85)",
+    color: "var(--muted)",
     minHeight: 80,
   },
   statsBars: {
@@ -399,13 +403,13 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "monospace",
     width: 130,
     fontSize: 13,
-    color: "#fff",
+    color: "var(--muted)",
     textTransform: "uppercase",
   },
   barTrack: {
     flex: 1,
-    height: 12,
-    background: "rgba(255,255,255,0.1)",
+    height: 10,
+    background: "var(--border)",
     borderRadius: 6,
     overflow: "hidden",
   },
