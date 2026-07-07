@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useParallax } from "../hooks";
 
 /* ────────────────────────────────────────
    3D PARTICLE GLOBE
@@ -188,35 +189,59 @@ const heroMetrics = [
 const scrollTo = (id: string) =>
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 
-const Hero: React.FC = () => (
+/** Staggered entrance: each hero element rises into focus on page load. */
+const useEntrance = () => {
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setLoaded(true));
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  return (order: number): React.CSSProperties => ({
+    opacity: loaded ? 1 : 0,
+    transform: loaded ? "translateY(0)" : "translateY(30px)",
+    filter: loaded ? "blur(0px)" : "blur(10px)",
+    transition: `opacity 0.85s cubic-bezier(0.16,1,0.3,1) ${order * 130}ms, transform 0.85s cubic-bezier(0.16,1,0.3,1) ${order * 130}ms, filter 0.85s cubic-bezier(0.16,1,0.3,1) ${order * 130}ms`,
+  });
+};
+
+const Hero: React.FC = () => {
+  // Background drifts at a fraction of the scroll speed for subtle depth
+  const parallaxRef = useParallax(0.25);
+  const enter = useEntrance();
+
+  return (
   <section data-section="hero" style={styles.section} className="grid-bg">
-    <HeroGlobe />
+    <div ref={parallaxRef} style={styles.parallaxLayer}>
+      <HeroGlobe />
+      <div style={styles.glowTop} />
+    </div>
 
     {/* Radial vignettes so content stays readable over the globe */}
     <div style={styles.vignette} />
-    <div style={styles.glowTop} />
 
     <div style={styles.content}>
-      <div style={styles.statusChip} className="glass">
+      <div style={{ ...styles.statusChip, ...enter(0) }} className="glass">
         <span className="status-dot" />
         <span style={styles.statusText}>Available for new projects</span>
       </div>
 
-      <h1 style={styles.heading}>
+      <h1 style={{ ...styles.heading, ...enter(1) }}>
         We engineer digital
         <br />
         products <span className="text-gradient">that scale</span>
       </h1>
 
-      <p style={styles.sub}>
+      <p style={{ ...styles.sub, ...enter(2) }}>
         Full-stack web platforms, mobile apps and e-commerce systems —
         designed, built and shipped to production by a team that treats your
         product like its own.
       </p>
 
-      <TypeLine />
+      <div style={enter(3)}>
+        <TypeLine />
+      </div>
 
-      <div style={styles.actions}>
+      <div style={{ ...styles.actions, ...enter(4) }}>
         <button className="btn-primary" onClick={() => scrollTo("contact")}>
           Start a project <span style={{ fontSize: 18, lineHeight: 1 }}>→</span>
         </button>
@@ -225,7 +250,7 @@ const Hero: React.FC = () => (
         </button>
       </div>
 
-      <div style={styles.metricsRow}>
+      <div style={{ ...styles.metricsRow, ...enter(5) }}>
         {heroMetrics.map((m, i) => (
           <React.Fragment key={m.label}>
             {i > 0 && <div style={styles.metricDivider} className="hide-mobile" />}
@@ -239,7 +264,8 @@ const Hero: React.FC = () => (
     </div>
 
   </section>
-);
+  );
+};
 
 const styles: Record<string, React.CSSProperties> = {
   section: {
@@ -251,6 +277,12 @@ const styles: Record<string, React.CSSProperties> = {
     padding: "140px 24px 100px",
     overflow: "hidden",
     background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(170, 55, 12, 0.22), transparent 60%), var(--bg)",
+  },
+  parallaxLayer: {
+    position: "absolute",
+    inset: 0,
+    pointerEvents: "none",
+    willChange: "transform",
   },
   canvas: {
     position: "absolute",

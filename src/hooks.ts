@@ -28,8 +28,38 @@ export const useReveal = <T extends HTMLElement = HTMLDivElement>(threshold = 0.
 export const revealStyle = (visible: boolean, delay = 0): React.CSSProperties => ({
   opacity: visible ? 1 : 0,
   transform: visible ? "translate3d(0, 0, 0)" : "translate3d(0, 28px, 0)",
-  transition: `opacity 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}ms, transform 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}ms`,
+  filter: visible ? "blur(0px)" : "blur(6px)",
+  transition: `opacity 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}ms, transform 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}ms, filter 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}ms`,
 });
+
+/**
+ * Subtle scroll parallax: translates the element vertically at a fraction
+ * of the scroll speed. Disabled when the user prefers reduced motion.
+ */
+export const useParallax = <T extends HTMLElement = HTMLDivElement>(speed = 0.25) => {
+  const ref = useRef<T | null>(null);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const el = ref.current;
+    if (!el) return;
+    let raf = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        el.style.transform = `translate3d(0, ${(window.scrollY * speed).toFixed(1)}px, 0)`;
+      });
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, [speed]);
+
+  return ref;
+};
 
 /**
  * 3D perspective tilt that follows the cursor.

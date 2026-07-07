@@ -1,6 +1,7 @@
 import React from "react";
 import { ThemeProvider, useTheme } from "./ThemeContext";
 import Navbar from "./components/Navbar";
+import ScrollProgress from "./components/ScrollProgress";
 import Hero from "./components/Hero";
 import TrustBar from "./components/TrustBar";
 import Services from "./components/Services";
@@ -18,6 +19,7 @@ const AppInner: React.FC = () => {
   const { theme } = useTheme();
   return (
     <div data-theme={theme} style={{ width: "100%", overflowX: "hidden", background: "var(--bg)", minHeight: "100vh" }}>
+      <ScrollProgress />
       <Navbar />
       <Hero />
       <TrustBar />
