@@ -1,4 +1,5 @@
 import React from "react";
+import { ThemeProvider, useTheme } from "./ThemeContext";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import TrustBar from "./components/TrustBar";
@@ -13,9 +14,10 @@ import Team from "./components/Team";
 import CTABand from "./components/CTABand";
 import Footer from "./components/Footer";
 
-const App: React.FC = () => {
+const AppInner: React.FC = () => {
+  const { theme } = useTheme();
   return (
-    <div style={{ width: "100%", overflowX: "hidden", background: "var(--bg)" }}>
+    <div data-theme={theme} style={{ width: "100%", overflowX: "hidden", background: "var(--bg)", minHeight: "100vh" }}>
       <Navbar />
       <Hero />
       <TrustBar />
@@ -33,4 +35,11 @@ const App: React.FC = () => {
   );
 };
 
+const App: React.FC = () => (
+  <ThemeProvider>
+    <AppInner />
+  </ThemeProvider>
+);
+
 export default App;
+

@@ -124,8 +124,8 @@ const CodeWindow: React.FC<{ lines: string[]; file: string }> = ({ lines, file }
         {lines.slice(0, count).map((line, i) => (
           <div key={i} style={cw.line}>
             <span style={cw.lineNum}>{String(i + 1).padStart(2, "0")}</span>
-            <span style={{ color: line.trimStart().startsWith("//") ? "#8a7466" : "#ffe7d2" }}>
-              {line || " "}
+            <span style={{ color: line.trimStart().startsWith("//") ? "var(--faint)" : "var(--text)" }}>
+              {line || " "}
             </span>
           </div>
         ))}
@@ -139,21 +139,21 @@ const cw: Record<string, React.CSSProperties> = {
   wrap: {
     width: "100%",
     minHeight: 330,
-    background: "rgba(16, 9, 6, 0.92)",
+    background: "var(--bg)",
     borderRadius: 16,
     overflow: "hidden",
     display: "flex",
     flexDirection: "column",
     border: "1px solid rgba(255, 122, 47, 0.22)",
-    boxShadow: "0 30px 80px -30px rgba(232, 67, 28, 0.4), inset 0 1px 0 rgba(255,255,255,0.05)",
+    boxShadow: "0 30px 80px -30px rgba(232, 67, 28, 0.4), inset 0 1px 0 rgba(0,0,0,0.05)",
   },
   bar: {
     display: "flex",
     alignItems: "center",
     gap: 7,
     padding: "12px 16px",
-    background: "rgba(255,255,255,0.03)",
-    borderBottom: "1px solid rgba(255,255,255,0.06)",
+    background: "var(--surface)",
+    borderBottom: "1px solid var(--border)",
   },
   dot: { width: 11, height: 11, borderRadius: "50%" },
   fileName: {
@@ -170,7 +170,7 @@ const cw: Record<string, React.CSSProperties> = {
   },
   line: { display: "flex", gap: 16 },
   lineNum: {
-    color: "rgba(190, 160, 140, 0.35)",
+    color: "var(--faint)",
     userSelect: "none",
     minWidth: 18,
     textAlign: "right",
@@ -289,7 +289,7 @@ const Process: React.FC = () => {
                   <span
                     style={{
                       ...styles.stepNum,
-                      color: i === active ? "#fff" : reached ? "rgba(255, 205, 165, 0.85)" : "var(--faint)",
+                      color: i === active ? "var(--text)" : reached ? "rgba(232, 67, 28, 0.85)" : "var(--faint)",
                     }}
                   >
                     {p.num}
@@ -359,7 +359,7 @@ const styles: Record<string, React.CSSProperties> = {
     right: 0,
     height: 3,
     borderRadius: 2,
-    background: "rgba(255,255,255,0.08)",
+    background: "var(--border)",
   },
   trackFill: {
     position: "absolute",
@@ -411,8 +411,8 @@ const styles: Record<string, React.CSSProperties> = {
     height: 13,
     borderRadius: "50%",
     marginTop: 25,
-    background: "rgba(255,255,255,0.08)",
-    border: "1px solid rgba(255,255,255,0.18)",
+    background: "var(--border)",
+    border: "1px solid var(--border)",
     transition: "all 0.3s cubic-bezier(0.16,1,0.3,1)",
   },
   dotLit: {
@@ -460,7 +460,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "var(--font-display)",
     fontWeight: 700,
     fontSize: "clamp(24px, 2.6vw, 38px)",
-    color: "#fff",
+    color: "var(--text)",
     letterSpacing: "-0.01em",
     lineHeight: 1.2,
   },
@@ -491,10 +491,10 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: "center",
     gap: 12,
     fontSize: 15,
-    color: "rgba(245, 238, 230, 0.85)",
+    color: "var(--text)",
   },
   check: {
-    color: "var(--green)",
+    color: "var(--accent-bright)",
     fontWeight: 700,
     fontSize: 14,
   },

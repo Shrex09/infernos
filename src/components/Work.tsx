@@ -190,7 +190,7 @@ const Work: React.FC = () => {
               style={{
                 ...styles.dot,
                 width: i === index ? 28 : 8,
-                background: i === index ? "linear-gradient(90deg, #e8431c, #ffa53c)" : "rgba(255,255,255,0.18)",
+                background: i === index ? "linear-gradient(90deg, #e8431c, #ffa53c)" : "var(--border)",
               }}
             />
           ))}
@@ -247,32 +247,32 @@ const styles: Record<string, React.CSSProperties> = {
     height: 560,
     borderRadius: 20,
     overflow: "hidden",
-    background: "linear-gradient(180deg, rgba(24, 14, 10, 0.9), rgba(14, 8, 6, 0.95))",
-    border: "1px solid rgba(255, 122, 47, 0.15)",
+    background: "var(--bg-2)",
+    border: "1px solid var(--border)",
     transition:
       "transform 0.85s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.85s ease, border-color 0.85s ease",
     willChange: "transform, opacity",
     backdropFilter: "blur(12px)",
     display: "flex",
     flexDirection: "column",
-    boxShadow: "0 10px 30px -10px rgba(0,0,0,0.5)",
+    boxShadow: "0 10px 40px -10px rgba(232, 67, 28, 0.12), 0 2px 12px -4px rgba(0,0,0,0.08)",
   },
   center: {
     transform: "translateX(0) scale(1)",
     zIndex: 3,
     opacity: 1,
-    boxShadow: "0 30px 80px -20px rgba(232, 67, 28, 0.45)",
-    border: "1px solid rgba(255, 140, 60, 0.45)",
+    boxShadow: "0 30px 80px -20px rgba(232, 67, 28, 0.35), 0 8px 30px -8px rgba(0,0,0,0.12)",
+    border: "1.5px solid rgba(255, 140, 60, 0.5)",
   },
   left: {
     transform: "translateX(-340px) rotateY(22deg) scale(0.82)",
     zIndex: 2,
-    opacity: 0.35,
+    opacity: 0.65,
   },
   right: {
     transform: "translateX(340px) rotateY(-22deg) scale(0.82)",
     zIndex: 2,
-    opacity: 0.35,
+    opacity: 0.65,
   },
   hidden: {
     transform: "translateX(0) scale(0.7)",
@@ -298,9 +298,9 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "var(--font-mono)",
     fontSize: 11,
     fontWeight: 600,
-    color: "#7df0c0",
-    background: "rgba(2, 10, 8, 0.75)",
-    border: "1px solid rgba(52, 211, 153, 0.4)",
+    color: "var(--accent-bright)",
+    background: "var(--bg)",
+    border: "1px solid rgba(255, 106, 43, 0.4)",
     borderRadius: 999,
     padding: "5px 12px",
     backdropFilter: "blur(6px)",
@@ -322,7 +322,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   cardTitle: {
     fontFamily: "var(--font-display)",
-    color: "#fff",
+    color: "var(--text)",
     fontSize: 18,
     fontWeight: 700,
     letterSpacing: "-0.01em",
@@ -330,7 +330,7 @@ const styles: Record<string, React.CSSProperties> = {
   domain: {
     fontFamily: "var(--font-mono)",
     fontSize: 11,
-    color: "rgba(255, 165, 75, 0.7)",
+    color: "var(--accent-bright)",
   },
   cardDesc: {
     color: "var(--muted)",
@@ -347,13 +347,13 @@ const styles: Record<string, React.CSSProperties> = {
   },
   featureItem: {
     fontSize: 13,
-    color: "rgba(255, 205, 170, 0.85)",
+    color: "var(--muted)",
     display: "flex",
     gap: 8,
     lineHeight: 1.5,
   },
   featureTick: {
-    color: "var(--amber)",
+    color: "var(--accent-bright)",
     fontWeight: 700,
   },
   arrow: {

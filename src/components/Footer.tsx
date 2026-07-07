@@ -4,13 +4,13 @@ type SendState = "idle" | "sending" | "sent" | "error";
 
 const inputBase: React.CSSProperties = {
   width: "100%",
-  background: "rgba(255, 255, 255, 0.03)",
-  border: "1px solid rgba(255, 255, 255, 0.12)",
+  background: "var(--surface)",
+  border: "1px solid var(--border)",
   borderRadius: 10,
   padding: "13px 16px",
   fontFamily: "var(--font-body)",
   fontSize: 15,
-  color: "#fff",
+  color: "var(--text)",
   outline: "none",
   transition: "border-color 0.25s ease, box-shadow 0.25s ease",
 };
@@ -21,7 +21,7 @@ const focusOn = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) =>
 };
 
 const focusOff = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-  e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.12)";
+  e.currentTarget.style.borderColor = "rgba(0, 0, 0, 0.12)";
   e.currentTarget.style.boxShadow = "none";
 };
 
@@ -283,11 +283,11 @@ const Footer: React.FC = () => {
           <div style={styles.mapWrap}>
             <iframe
               title="Infernos location on Google Maps"
-              src="https://www.google.com/maps?q=16.861751,74.601806&z=15&output=embed"
+              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d408.4236459137515!2d74.59658205752928!3d16.847214457161517!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1783410537889!5m2!1sen!2sin"
               style={styles.mapFrame}
               loading="lazy"
               allowFullScreen
-              referrerPolicy="no-referrer-when-downgrade"
+              referrerPolicy="strict-origin-when-cross-origin"
             />
             <div style={styles.mapEdgeGlow} />
           </div>
@@ -368,7 +368,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "var(--font-display)",
     fontWeight: 800,
     fontSize: 16,
-    color: "#FFFFFF",
+    color: "#000000",
     letterSpacing: "0.12em",
   },
   pitch: {
@@ -384,7 +384,7 @@ const styles: Record<string, React.CSSProperties> = {
   label: {
     fontFamily: "var(--font-mono)",
     fontSize: 11.5,
-    color: "rgba(255, 205, 165, 0.65)",
+    color: "var(--amber)",
     letterSpacing: "0.1em",
     marginTop: 6,
   },
@@ -409,7 +409,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "var(--font-mono)",
     fontWeight: 600,
     fontSize: 14,
-    color: "#ffc296",
+    color: "var(--accent-bright)",
     letterSpacing: "0.06em",
   },
   linkList: {
@@ -445,13 +445,13 @@ const styles: Record<string, React.CSSProperties> = {
     marginTop: 10,
     padding: "10px 14px",
     borderRadius: 10,
-    background: "rgba(52, 211, 153, 0.06)",
-    border: "1px solid rgba(52, 211, 153, 0.22)",
+    background: "rgba(255, 106, 43, 0.06)",
+    border: "1px solid rgba(255, 106, 43, 0.22)",
   },
   responseText: {
     fontFamily: "var(--font-mono)",
     fontSize: 12,
-    color: "rgba(160, 240, 200, 0.9)",
+    color: "var(--accent-bright)",
   },
   locationPanel: {
     display: "flex",
@@ -471,7 +471,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "var(--font-display)",
     fontWeight: 700,
     fontSize: 21,
-    color: "#fff",
+    color: "#000",
     letterSpacing: "-0.01em",
   },
   coords: {
@@ -483,7 +483,7 @@ const styles: Record<string, React.CSSProperties> = {
   locationCity: {
     fontSize: 16,
     fontWeight: 600,
-    color: "rgba(245, 238, 230, 0.9)",
+    color: "var(--text)",
   },
   locationNote: {
     fontSize: 14,
@@ -541,12 +541,12 @@ const styles: Record<string, React.CSSProperties> = {
   builtWith: {
     fontFamily: "var(--font-mono)",
     fontSize: 12.5,
-    color: "rgba(255, 155, 70, 0.55)",
+    color: "var(--amber)",
   },
   emailLink: {
     fontFamily: "var(--font-mono)",
     fontSize: 13.5,
-    color: "rgba(255, 210, 175, 0.85)",
+    color: "var(--accent-bright)",
   },
 };
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTheme } from "../ThemeContext";
 
 const navLinks = [
   { label: "Services", id: "services" },
@@ -10,6 +11,8 @@ const navLinks = [
 ];
 
 const Navbar: React.FC = () => {
+  const { theme, toggle } = useTheme();
+  const isDark = theme === "dark";
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeId, setActiveId] = useState("");
@@ -62,8 +65,9 @@ const Navbar: React.FC = () => {
       <nav
         style={{
           ...styles.navbar,
-          background:
-            scrolled || menuOpen ? "rgba(11, 7, 5, 0.85)" : "transparent",
+          background: scrolled || menuOpen
+            ? isDark ? "rgba(9, 7, 10, 0.88)" : "rgba(255, 255, 255, 0.85)"
+            : "transparent",
           backdropFilter: scrolled || menuOpen ? "blur(18px)" : "none",
           WebkitBackdropFilter: scrolled || menuOpen ? "blur(18px)" : "none",
           borderBottom: scrolled
@@ -95,10 +99,9 @@ const Navbar: React.FC = () => {
                   <span
                     style={{
                       ...styles.linkLabel,
-                      color:
-                        activeId === link.id
-                          ? "#ffffff"
-                          : "rgba(255,255,255,0.6)",
+                      color: activeId === link.id
+                        ? isDark ? "#ffffff" : "#000000"
+                        : isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)",
                     }}
                   >
                     {link.label}
@@ -115,6 +118,37 @@ const Navbar: React.FC = () => {
           )}
 
           <div style={styles.actions}>
+            {/* Theme Toggle */}
+            <button
+              onClick={toggle}
+              aria-label="Toggle theme"
+              style={{
+                ...styles.themeToggle,
+                background: isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.05)",
+                border: isDark ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(0,0,0,0.10)",
+                boxShadow: isDark ? "0 0 0 0 transparent" : "0 1px 4px rgba(0,0,0,0.08)",
+              }}
+            >
+              <span style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "transform 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease",
+                transform: isDark ? "rotate(-30deg)" : "rotate(0deg)",
+              }}>
+                {isDark ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" fill="#c4b5fd" />
+                  </svg>
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="5" fill="#f59e0b" />
+                    <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                )}
+              </span>
+            </button>
+
             {!isMobile && (
               <button className="btn-primary" style={styles.ctaBtn} onClick={() => scrollTo("contact")}>
                 Start a project
@@ -155,7 +189,7 @@ const Navbar: React.FC = () => {
                 transitionDelay: menuOpen ? `${i * 45}ms` : "0ms",
                 opacity: menuOpen ? 1 : 0,
                 transform: menuOpen ? "translateX(0)" : "translateX(-12px)",
-                color: activeId === link.id ? "#ff7a3c" : "#ffffff",
+                color: activeId === link.id ? "#ff7a3c" : isDark ? "#f5f0ec" : "#000000",
               }}
             >
               <span style={styles.mobileLinkNum}>0{i + 1}</span>
@@ -181,6 +215,24 @@ const Navbar: React.FC = () => {
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  themeToggle: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 36,
+    height: 36,
+    borderRadius: "50%",
+    cursor: "pointer",
+    flexShrink: 0,
+    outline: "none",
+    transition: "background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease",
+  },
+  toggleThumb: {
+    display: "none",
+  },
+  toggleLabel: {
+    display: "none",
+  },
   navbar: {
     position: "fixed",
     top: 0,
@@ -219,13 +271,13 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "var(--font-display)",
     fontWeight: 800,
     fontSize: 15,
-    color: "#FFFFFF",
+    color: "var(--text)",
     letterSpacing: "0.12em",
   },
   logoTag: {
     fontFamily: "var(--font-mono)",
     fontSize: 10,
-    color: "rgba(255, 205, 165, 0.55)",
+    color: "var(--amber)",
     letterSpacing: "0.16em",
     marginTop: 3,
   },
@@ -290,7 +342,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: "block",
     width: 24,
     height: 2,
-    background: "#FFFFFF",
+    background: "var(--text)",
     borderRadius: 2,
     transition: "all 0.3s ease",
   },
@@ -299,7 +351,7 @@ const styles: Record<string, React.CSSProperties> = {
     top: 72,
     left: 0,
     right: 0,
-    background: "rgba(11, 7, 5, 0.97)",
+    background: "var(--bg-2)",
     backdropFilter: "blur(20px)",
     WebkitBackdropFilter: "blur(20px)",
     borderBottom: "1px solid rgba(255, 115, 45, 0.15)",
@@ -318,7 +370,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 700,
     textAlign: "left",
     padding: "14px 0",
-    borderBottom: "1px solid rgba(255,255,255,0.06)",
+    borderBottom: "1px solid rgba(0,0,0,0.06)",
     cursor: "pointer",
     display: "flex",
     alignItems: "center",

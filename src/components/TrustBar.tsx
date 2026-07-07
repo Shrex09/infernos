@@ -32,8 +32,8 @@ const styles: Record<string, React.CSSProperties> = {
   section: {
     background: "var(--bg)",
     padding: "44px 0",
-    borderTop: "1px solid rgba(255,255,255,0.05)",
-    borderBottom: "1px solid rgba(255,255,255,0.05)",
+    borderTop: "1px solid rgba(0,0,0,0.05)",
+    borderBottom: "1px solid rgba(0,0,0,0.05)",
     display: "flex",
     flexDirection: "column",
     gap: 26,
@@ -78,14 +78,14 @@ const styles: Record<string, React.CSSProperties> = {
     flexShrink: 0,
   },
   hex: {
-    color: "rgba(255, 140, 60, 0.6)",
+    color: "var(--accent-bright)",
     fontSize: 16,
   },
   name: {
     fontFamily: "var(--font-display)",
     fontWeight: 600,
     fontSize: 16,
-    color: "rgba(245, 238, 230, 0.5)",
+    color: "var(--muted)",
     whiteSpace: "nowrap",
     letterSpacing: "0.02em",
   },

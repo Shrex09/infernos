@@ -2,7 +2,7 @@ import qrcode
 from qrcode.image.styledpil import StyledPilImage
 from qrcode.image.styles.moduledrawers.pil import SquareModuleDrawer
 from qrcode.image.styles.colormasks import SolidFillColorMask
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageOps
 import os
 
 def create_geeks_style_qr(url, logo_path, output_path):
@@ -24,8 +24,11 @@ def create_geeks_style_qr(url, logo_path, output_path):
         image_factory=StyledPilImage,
         module_drawer=SquareModuleDrawer(),
         eye_drawer=SquareModuleDrawer(),
-        color_mask=SolidFillColorMask(back_color=(255, 255, 255), front_color=BRAND_COLOR)
+        color_mask=SolidFillColorMask(back_color=(255, 255, 255), front_color=(0,0,0))
     ).convert('RGBA')
+
+    # Invert the QR code to get white bars on black background
+    qr_img = ImageOps.invert(qr_img.convert('RGB')).convert('RGBA')
 
     if not os.path.exists(logo_path):
         print(f"Error: Could not find logo at {logo_path}")
@@ -61,7 +64,7 @@ def create_geeks_style_qr(url, logo_path, output_path):
 
     # Save
     qr_img.convert('RGB').save(output_path)
-    print(f"✅ Success! GeeksForGeeks style QR code saved to: {output_path}")
+    print(f"Success! GeeksForGeeks style QR code saved to: {output_path}")
 
 if __name__ == "__main__":
     URL = "https://infernos.co.in"

@@ -143,9 +143,9 @@ const styles: Record<string, React.CSSProperties> = {
     width: 24,
     height: 24,
     borderRadius: 8,
-    background: "rgba(52, 211, 153, 0.12)",
-    border: "1px solid rgba(52, 211, 153, 0.35)",
-    color: "var(--green)",
+    background: "rgba(255, 106, 43, 0.12)",
+    border: "1px solid rgba(255, 106, 43, 0.35)",
+    color: "var(--accent-bright)",
     fontSize: 13,
     fontWeight: 700,
     display: "flex",
@@ -157,7 +157,7 @@ const styles: Record<string, React.CSSProperties> = {
   commitText: {
     fontSize: 16.5,
     lineHeight: 1.55,
-    color: "rgba(245, 238, 230, 0.85)",
+    color: "var(--muted)",
   },
   grid: {
     flex: "1 1 460px",
@@ -187,7 +187,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "var(--font-display)",
     fontWeight: 700,
     fontSize: 16.5,
-    color: "#fff",
+    color: "var(--text)",
   },
   cardDesc: {
     fontSize: 14,

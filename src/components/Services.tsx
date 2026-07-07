@@ -147,18 +147,18 @@ const styles: Record<string, React.CSSProperties> = {
     color: "#ff9357",
     background: "linear-gradient(145deg, rgba(255, 90, 30, 0.18), rgba(255, 165, 60, 0.06))",
     border: "1px solid rgba(255, 130, 55, 0.3)",
-    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08)",
+    boxShadow: "inset 0 1px 0 rgba(0,0,0,0.08)",
   },
   cardIndex: {
     fontFamily: "var(--font-mono)",
     fontSize: 12,
-    color: "rgba(255, 155, 70, 0.55)",
+    color: "var(--amber)",
   },
   cardHeading: {
     fontFamily: "var(--font-display)",
     fontWeight: 700,
     fontSize: 19,
-    color: "#fff",
+    color: "var(--text)",
     letterSpacing: "-0.01em",
   },
   cardText: {

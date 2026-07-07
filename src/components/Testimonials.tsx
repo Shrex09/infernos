@@ -136,9 +136,9 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "var(--font-mono)",
     fontSize: 11,
     fontWeight: 600,
-    color: "#7df0c0",
-    background: "rgba(52, 211, 153, 0.08)",
-    border: "1px solid rgba(52, 211, 153, 0.3)",
+    color: "var(--accent-bright)",
+    background: "rgba(255, 106, 43, 0.08)",
+    border: "1px solid rgba(255, 106, 43, 0.3)",
     borderRadius: 999,
     padding: "4px 11px",
     letterSpacing: "0.05em",
@@ -146,7 +146,7 @@ const styles: Record<string, React.CSSProperties> = {
   quote: {
     fontSize: 15.5,
     lineHeight: 1.7,
-    color: "rgba(245, 238, 230, 0.88)",
+    color: "var(--muted)",
     flex: 1,
   },
   resultChip: {
@@ -154,7 +154,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "var(--font-mono)",
     fontSize: 12.5,
     fontWeight: 600,
-    color: "#ffc296",
+    color: "var(--accent-bright)",
     background: "rgba(255, 105, 35, 0.1)",
     border: "1px solid rgba(255, 130, 55, 0.3)",
     borderRadius: 8,
@@ -174,7 +174,7 @@ const styles: Record<string, React.CSSProperties> = {
     height: 48,
     borderRadius: "50%",
     objectFit: "cover",
-    background: "#fff",
+    background: "var(--bg-2)",
     padding: 3,
     border: "1px solid rgba(255, 130, 55, 0.3)",
   },
@@ -186,7 +186,7 @@ const styles: Record<string, React.CSSProperties> = {
   name: {
     fontWeight: 600,
     fontSize: 15.5,
-    color: "#fff",
+    color: "var(--text)",
   },
   role: {
     fontSize: 13.5,
