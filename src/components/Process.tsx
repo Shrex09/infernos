@@ -218,13 +218,16 @@ const Process: React.FC = () => {
   const body = useReveal();
   const current = phases[active];
 
-  // Auto-advance every 6s unless the user is hovering the section
+  // Auto-advance every 6s unless the user is hovering the section.
+  // Starts only once the stepper scrolls into view, so visitors always
+  // watch the fuse ignite from phase 01 instead of arriving mid-burn.
   useEffect(() => {
+    if (!body.visible) return;
     const interval = setInterval(() => {
       if (!pausedRef.current) setActive((a) => (a + 1) % phases.length);
     }, 6000);
     return () => clearInterval(interval);
-  }, []);
+  }, [body.visible]);
 
   return (
     <section
