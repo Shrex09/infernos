@@ -4,22 +4,23 @@
    DESIGN TOKENS
 ──────────────────────────────────────── */
 :root {
-  --bg: #ffffff;
-  --bg-2: #f9f6f3;
-  --surface: rgba(0, 0, 0, 0.03);
-  --surface-2: rgba(0, 0, 0, 0.05);
-  --border: rgba(0, 0, 0, 0.08);
-  --border-strong: rgba(255, 115, 45, 0.4);
+  --bg: #fbf9f6;
+  --bg-2: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f3efe9;
+  --border: rgba(15, 23, 42, 0.08);
+  --border-strong: rgba(232, 67, 28, 0.45);
   --accent: #e8431c;
-  --accent-bright: #ff6a2b;
-  --amber: #ffa53c;
-  --green: #34d399;
-  --text: #0a0605;
-  --muted: rgba(10, 6, 5, 0.62);
-  --faint: rgba(10, 6, 5, 0.38);
+  --accent-bright: #ff5522;
+  --amber: #d9531e;
+  --green: #059669;
+  --text: #0f172a;
+  --muted: #475569;
+  --faint: #64748b;
   --font-display: 'Unbounded', sans-serif;
   --font-body: 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+  --card-shadow: 0 10px 30px -10px rgba(232, 67, 28, 0.08), 0 2px 10px -2px rgba(15, 23, 42, 0.04);
 }
 
 /* ────────────────────────────────────────
@@ -28,7 +29,7 @@
 [data-theme="dark"] {
   --bg: #09070a;
   --bg-2: #120e0a;
-  --surface: rgba(255, 255, 255, 0.04);
+  --surface: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
   --surface-2: rgba(255, 255, 255, 0.07);
   --border: rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 115, 45, 0.5);
@@ -39,6 +40,7 @@
   --text: #f5f0ec;
   --muted: rgba(245, 240, 236, 0.62);
   --faint: rgba(245, 240, 236, 0.35);
+  --card-shadow: none;
 }
 
 /* Smooth theme transitions */
@@ -100,7 +102,7 @@ section[id], footer[id] {
 .kicker {
   font-family: var(--font-mono);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--amber);
@@ -111,7 +113,7 @@ section[id], footer[id] {
 
 .kicker::before {
   content: "//";
-  color: rgba(255, 165, 60, 0.5);
+  color: var(--accent-bright);
 }
 
 .section-heading {
@@ -141,11 +143,12 @@ section[id], footer[id] {
    SURFACES / CARDS
 ──────────────────────────────────────── */
 .glass {
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.045), rgba(0, 0, 0, 0.015));
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 18px;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
+  box-shadow: var(--card-shadow);
 }
 
 .hover-glow {
@@ -155,8 +158,8 @@ section[id], footer[id] {
 .hover-glow:hover {
   border-color: var(--border-strong);
   box-shadow:
-    0 0 0 1px rgba(255, 115, 45, 0.18),
-    0 24px 70px -24px rgba(232, 67, 28, 0.45);
+    0 0 0 1px rgba(255, 115, 45, 0.22),
+    0 20px 50px -15px rgba(232, 67, 28, 0.22);
 }
 
 .grid-bg {
