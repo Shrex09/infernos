@@ -29,18 +29,23 @@
 [data-theme="dark"] {
   --bg: #09070a;
   --bg-2: #120e0a;
-  --surface: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
-  --surface-2: rgba(255, 255, 255, 0.07);
-  --border: rgba(255, 255, 255, 0.08);
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-2: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.12);
   --border-strong: rgba(255, 115, 45, 0.5);
   --accent: #e8431c;
   --accent-bright: #ff6a2b;
   --amber: #ffa53c;
   --green: #34d399;
   --text: #f5f0ec;
-  --muted: rgba(245, 240, 236, 0.62);
-  --faint: rgba(245, 240, 236, 0.35);
+  --muted: rgba(245, 240, 236, 0.65);
+  --faint: rgba(245, 240, 236, 0.45);
   --card-shadow: none;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--faint);
+  opacity: 0.8;
 }
 
 /* Smooth theme transitions */

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTheme } from "../ThemeContext";
 
 type SendState = "idle" | "sending" | "sent" | "error";
 
@@ -21,11 +22,13 @@ const focusOn = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) =>
 };
 
 const focusOff = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-  e.currentTarget.style.borderColor = "rgba(0, 0, 0, 0.12)";
+  e.currentTarget.style.borderColor = "var(--border)";
   e.currentTarget.style.boxShadow = "none";
 };
 
 const Footer: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -317,7 +320,10 @@ const Footer: React.FC = () => {
             <iframe
               title="Infernos location on Google Maps"
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1324.3243147252174!2d74.59683323027285!3d16.847432608436556!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc123a16254a443%3A0x6ae884f5ddcafc5d!2sInferno%20IT%20Solutions!5e0!3m2!1sen!2sin!4v1785492786434!5m2!1sen!2sin"
-              style={styles.mapFrame}
+              style={{
+                ...styles.mapFrame,
+                filter: isDark ? "invert(92%) grayscale(45%) sepia(30%) contrast(88%)" : "none",
+              }}
               loading="lazy"
               allowFullScreen
               referrerPolicy="strict-origin-when-cross-origin"
@@ -401,7 +407,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "var(--font-display)",
     fontWeight: 800,
     fontSize: 16,
-    color: "#000000",
+    color: "var(--text)",
     letterSpacing: "0.12em",
   },
   pitch: {
@@ -504,7 +510,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "var(--font-display)",
     fontWeight: 700,
     fontSize: 21,
-    color: "#000",
+    color: "var(--text)",
     letterSpacing: "-0.01em",
   },
   coords: {
@@ -542,7 +548,6 @@ const styles: Record<string, React.CSSProperties> = {
     width: "100%",
     height: "100%",
     border: "none",
-    filter: "invert(92%) grayscale(45%) sepia(30%) contrast(88%)",
   },
   mapEdgeGlow: {
     position: "absolute",
