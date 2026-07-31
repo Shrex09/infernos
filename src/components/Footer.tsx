@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 type SendState = "idle" | "sending" | "sent" | "error";
 
@@ -31,11 +31,34 @@ const Footer: React.FC = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [state, setState] = useState<SendState>("idle");
+  const [cooldown, setCooldown] = useState<number>(0);
+
+  // Rate limiting (60 seconds cooldown stored in localStorage)
+  useEffect(() => {
+    const COOLDOWN_MS = 60 * 1000;
+    const checkCooldown = () => {
+      const lastSubmit = localStorage.getItem("infernos_last_form_submit");
+      if (lastSubmit) {
+        const elapsed = Date.now() - parseInt(lastSubmit, 10);
+        if (elapsed < COOLDOWN_MS) {
+          setCooldown(Math.ceil((COOLDOWN_MS - elapsed) / 1000));
+        } else {
+          setCooldown(0);
+        }
+      }
+    };
+
+    checkCooldown();
+    const interval = setInterval(checkCooldown, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   // This will be the URL of your deployed Google Apps Script
   const scriptUrl = import.meta.env.VITE_GOOGLE_SHEET_URL;
 
   const handleSubmit = async () => {
+    if (cooldown > 0) return;
+
     if (!name || !phone || !email || !message) {
       setState("error");
       return;
@@ -62,6 +85,8 @@ const Footer: React.FC = () => {
         mode: "no-cors",
       });
 
+      localStorage.setItem("infernos_last_form_submit", Date.now().toString());
+      setCooldown(60);
       setState("sent");
       setName("");
       setPhone("");
@@ -144,11 +169,19 @@ const Footer: React.FC = () => {
 
               <button
                 className="btn-primary"
-                style={{ justifyContent: "center", opacity: state === "sending" ? 0.7 : 1 }}
+                style={{
+                  justifyContent: "center",
+                  opacity: state === "sending" || cooldown > 0 ? 0.7 : 1,
+                  cursor: state === "sending" || cooldown > 0 ? "not-allowed" : "pointer",
+                }}
                 onClick={handleSubmit}
-                disabled={state === "sending"}
+                disabled={state === "sending" || cooldown > 0}
               >
-                {state === "sending" ? "Sending…" : "Send message →"}
+                {state === "sending"
+                  ? "Sending…"
+                  : cooldown > 0
+                  ? `Wait ${cooldown}s to resubmit`
+                  : "Send message →"}
               </button>
 
               {status && (
@@ -283,7 +316,7 @@ const Footer: React.FC = () => {
           <div style={styles.mapWrap}>
             <iframe
               title="Infernos location on Google Maps"
-              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d408.4236459137515!2d74.59658205752928!3d16.847214457161517!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1783410537889!5m2!1sen!2sin"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1324.3243147252174!2d74.59683323027285!3d16.847432608436556!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc123a16254a443%3A0x6ae884f5ddcafc5d!2sInferno%20IT%20Solutions!5e0!3m2!1sen!2sin!4v1785492786434!5m2!1sen!2sin"
               style={styles.mapFrame}
               loading="lazy"
               allowFullScreen
