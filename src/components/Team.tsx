@@ -115,10 +115,11 @@ const Team: React.FC = () => {
     // UTC date ensures everyone worldwide sees the same order today
     const seed = today.getUTCFullYear() * 10000 + (today.getUTCMonth() + 1) * 100 + today.getUTCDate();
 
-    let currentSeed = seed;
+    // Hash initial seed to eliminate low-entropy correlation between sequential days
+    let currentSeed = Math.imul(seed ^ 0x6c078965, 1812433253) >>> 0;
     // Simple pseudo-random number generator (LCG)
     const random = () => {
-      currentSeed = (currentSeed * 1664525 + 1013904223) % 4294967296;
+      currentSeed = (Math.imul(currentSeed, 1664525) + 1013904223) >>> 0;
       return currentSeed / 4294967296;
     };
 
