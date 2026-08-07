@@ -212,12 +212,22 @@ const Hero: React.FC = () => {
   return (
     <section data-section="hero" style={styles.section} className="grid-bg">
       <div ref={parallaxRef} style={styles.parallaxLayer}>
+        {/* Ambient depth: three drifting orbs sit behind the globe */}
+        <div style={{ ...styles.orb, ...styles.orbAmber }} />
+        <div style={{ ...styles.orb, ...styles.orbCoral }} />
+        <div style={{ ...styles.orb, ...styles.orbDeep }} />
         <HeroGlobe />
         <div style={styles.glowTop} />
       </div>
 
-      {/* Radial vignettes so content stays readable over the globe */}
+      {/* Fine grain overlay adds tactile depth without competing with content */}
+      <div style={styles.grain} />
+
+      {/* Radial vignette so content stays readable over the globe */}
       <div style={styles.vignette} />
+
+      {/* Spotlight anchoring the headline block */}
+      <div style={styles.spotlight} />
 
       <div style={styles.content}>
         <div style={{ ...styles.statusChip, ...enter(0) }} className="glass">
@@ -228,7 +238,7 @@ const Hero: React.FC = () => {
         <h1 style={{ ...styles.heading, ...enter(1) }}>
           We engineer digital
           <br />
-          products <span className="text-gradient">that scale</span>
+          products <span className="text-gradient-shimmer">that scale</span>
         </h1>
 
         <p style={{ ...styles.sub, ...enter(2) }}>
@@ -252,13 +262,11 @@ const Hero: React.FC = () => {
 
         <div style={{ ...styles.metricsRow, ...enter(5) }}>
           {heroMetrics.map((m, i) => (
-            <React.Fragment key={m.label}>
-              {i > 0 && <div style={styles.metricDivider} className="hide-mobile" />}
-              <div style={styles.metric}>
-                <span style={styles.metricValue}>{m.value}</span>
-                <span style={styles.metricLabel}>{m.label}</span>
-              </div>
-            </React.Fragment>
+            <div key={m.label} style={styles.metricChip} className="glass hover-glow">
+              <span style={{ ...styles.metricDot, background: metricAccents[i] }} />
+              <span style={styles.metricValue}>{m.value}</span>
+              <span style={styles.metricLabel}>{m.label}</span>
+            </div>
           ))}
         </div>
       </div>
@@ -266,6 +274,8 @@ const Hero: React.FC = () => {
     </section>
   );
 };
+
+const metricAccents = ["#f05a18", "#ffa53c", "#e8300a", "#f7c948"];
 
 const styles: Record<string, React.CSSProperties> = {
   section: {
@@ -300,6 +310,64 @@ const styles: Record<string, React.CSSProperties> = {
     background: "radial-gradient(ellipse 55% 50% at 50% 50%, var(--bg) 0%, rgba(0,0,0,0) 70%)",
     pointerEvents: "none",
     opacity: 0.82,
+  },
+  spotlight: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    width: 1100,
+    height: 620,
+    transform: "translate(-50%, -50%)",
+    background:
+      "radial-gradient(ellipse at center, rgba(255, 140, 60, 0.22) 0%, rgba(255, 100, 40, 0.10) 30%, transparent 65%)",
+    filter: "blur(30px)",
+    pointerEvents: "none",
+    zIndex: 1,
+  },
+  grain: {
+    position: "absolute",
+    inset: 0,
+    pointerEvents: "none",
+    opacity: 0.35,
+    mixBlendMode: "overlay",
+    backgroundImage:
+      "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.6  0 0 0 0 0.3  0 0 0 0 0.1  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
+    backgroundSize: "160px 160px",
+    zIndex: 1,
+  },
+  orb: {
+    position: "absolute",
+    borderRadius: "50%",
+    filter: "blur(80px)",
+    pointerEvents: "none",
+    willChange: "transform",
+  },
+  orbAmber: {
+    top: "12%",
+    left: "8%",
+    width: 480,
+    height: 480,
+    background:
+      "radial-gradient(circle, rgba(255, 155, 60, 0.55) 0%, rgba(255, 130, 40, 0.2) 40%, transparent 70%)",
+    animation: "drift-a 18s ease-in-out infinite",
+  },
+  orbCoral: {
+    top: "35%",
+    right: "6%",
+    width: 420,
+    height: 420,
+    background:
+      "radial-gradient(circle, rgba(240, 80, 30, 0.5) 0%, rgba(200, 50, 15, 0.18) 45%, transparent 70%)",
+    animation: "drift-b 22s ease-in-out infinite",
+  },
+  orbDeep: {
+    bottom: "8%",
+    left: "40%",
+    width: 520,
+    height: 520,
+    background:
+      "radial-gradient(circle, rgba(180, 40, 10, 0.45) 0%, rgba(120, 30, 5, 0.15) 45%, transparent 70%)",
+    animation: "drift-c 26s ease-in-out infinite",
   },
   glowTop: {
     position: "absolute",
@@ -379,32 +447,37 @@ const styles: Record<string, React.CSSProperties> = {
   metricsRow: {
     display: "flex",
     alignItems: "center",
-    gap: 28,
-    marginTop: 22,
+    gap: 12,
+    marginTop: 18,
     flexWrap: "wrap",
     justifyContent: "center",
   },
-  metricDivider: {
-    width: 1,
-    height: 36,
-    background: "linear-gradient(180deg, transparent, rgba(0,0,0,0.18), transparent)",
-  },
-  metric: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 2,
+  metricChip: {
+    display: "inline-flex",
     alignItems: "center",
+    gap: 10,
+    padding: "10px 16px",
+    borderRadius: 999,
+    cursor: "default",
+  },
+  metricDot: {
+    width: 8,
+    height: 8,
+    borderRadius: "50%",
+    boxShadow: "0 0 10px currentColor",
+    flexShrink: 0,
   },
   metricValue: {
     fontFamily: "var(--font-mono)",
-    fontWeight: 600,
-    fontSize: 22,
+    fontWeight: 700,
+    fontSize: 16,
     color: "var(--text)",
+    letterSpacing: "-0.01em",
   },
   metricLabel: {
     fontSize: 12.5,
-    color: "var(--faint)",
-    letterSpacing: "0.04em",
+    color: "var(--muted)",
+    letterSpacing: "0.02em",
   },
   scrollHint: {
     position: "absolute",
