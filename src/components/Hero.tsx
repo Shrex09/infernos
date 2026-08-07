@@ -88,7 +88,7 @@ const HeroGlobe: React.FC = () => {
         const pa = proj[a];
         const pb = proj[b];
         const front = 1 - (pa.z + pb.z) / 2; // 0 back … 2 front
-        ctx.strokeStyle = `rgba(220, 90, 30, ${0.06 + front * 0.22})`;
+        ctx.strokeStyle = `rgba(185, 65, 15, ${0.12 + front * 0.38})`;
         ctx.beginPath();
         ctx.moveTo(pa.sx, pa.sy);
         ctx.lineTo(pb.sx, pb.sy);
@@ -210,60 +210,60 @@ const Hero: React.FC = () => {
   const enter = useEntrance();
 
   return (
-  <section data-section="hero" style={styles.section} className="grid-bg">
-    <div ref={parallaxRef} style={styles.parallaxLayer}>
-      <HeroGlobe />
-      <div style={styles.glowTop} />
-    </div>
-
-    {/* Radial vignettes so content stays readable over the globe */}
-    <div style={styles.vignette} />
-
-    <div style={styles.content}>
-      <div style={{ ...styles.statusChip, ...enter(0) }} className="glass">
-        <span className="status-dot" />
-        <span style={styles.statusText}>Available for new projects</span>
+    <section data-section="hero" style={styles.section} className="grid-bg">
+      <div ref={parallaxRef} style={styles.parallaxLayer}>
+        <HeroGlobe />
+        <div style={styles.glowTop} />
       </div>
 
-      <h1 style={{ ...styles.heading, ...enter(1) }}>
-        We engineer digital
-        <br />
-        products <span className="text-gradient">that scale</span>
-      </h1>
+      {/* Radial vignettes so content stays readable over the globe */}
+      <div style={styles.vignette} />
 
-      <p style={{ ...styles.sub, ...enter(2) }}>
-        Full-stack web platforms, mobile apps and e-commerce systems —
-        designed, built and shipped to production by a team that treats your
-        product like its own.
-      </p>
+      <div style={styles.content}>
+        <div style={{ ...styles.statusChip, ...enter(0) }} className="glass">
+          <span className="status-dot" />
+          <span style={styles.statusText}>Available for new projects</span>
+        </div>
 
-      <div style={enter(3)}>
-        <TypeLine />
+        <h1 style={{ ...styles.heading, ...enter(1) }}>
+          We engineer digital
+          <br />
+          products <span className="text-gradient">that scale</span>
+        </h1>
+
+        <p style={{ ...styles.sub, ...enter(2) }}>
+          Full-stack web platforms, mobile apps and e-commerce systems —
+          designed, built and shipped to production by a team that treats your
+          product like its own.
+        </p>
+
+        <div style={enter(3)}>
+          <TypeLine />
+        </div>
+
+        <div style={{ ...styles.actions, ...enter(4) }}>
+          <button className="btn-primary" onClick={() => scrollTo("contact")}>
+            Start a project <span style={{ fontSize: 18, lineHeight: 1 }}>→</span>
+          </button>
+          <button className="btn-ghost" onClick={() => scrollTo("work")}>
+            View our work
+          </button>
+        </div>
+
+        <div style={{ ...styles.metricsRow, ...enter(5) }}>
+          {heroMetrics.map((m, i) => (
+            <React.Fragment key={m.label}>
+              {i > 0 && <div style={styles.metricDivider} className="hide-mobile" />}
+              <div style={styles.metric}>
+                <span style={styles.metricValue}>{m.value}</span>
+                <span style={styles.metricLabel}>{m.label}</span>
+              </div>
+            </React.Fragment>
+          ))}
+        </div>
       </div>
 
-      <div style={{ ...styles.actions, ...enter(4) }}>
-        <button className="btn-primary" onClick={() => scrollTo("contact")}>
-          Start a project <span style={{ fontSize: 18, lineHeight: 1 }}>→</span>
-        </button>
-        <button className="btn-ghost" onClick={() => scrollTo("work")}>
-          View our work
-        </button>
-      </div>
-
-      <div style={{ ...styles.metricsRow, ...enter(5) }}>
-        {heroMetrics.map((m, i) => (
-          <React.Fragment key={m.label}>
-            {i > 0 && <div style={styles.metricDivider} className="hide-mobile" />}
-            <div style={styles.metric}>
-              <span style={styles.metricValue}>{m.value}</span>
-              <span style={styles.metricLabel}>{m.label}</span>
-            </div>
-          </React.Fragment>
-        ))}
-      </div>
-    </div>
-
-  </section>
+    </section>
   );
 };
 
@@ -276,7 +276,7 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: "center",
     padding: "140px 24px 100px",
     overflow: "hidden",
-    background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(170, 55, 12, 0.22), transparent 60%), var(--bg)",
+    background: "radial-gradient(ellipse 80% 55% at 50% 30%, rgba(200, 60, 10, 0.28), transparent 65%), var(--bg)",
   },
   parallaxLayer: {
     position: "absolute",
@@ -303,13 +303,13 @@ const styles: Record<string, React.CSSProperties> = {
   },
   glowTop: {
     position: "absolute",
-    top: "-30%",
+    top: "10%",
     left: "50%",
     transform: "translateX(-50%)",
     width: 900,
     height: 500,
-    background: "radial-gradient(ellipse, rgba(255, 105, 35, 0.16), transparent 65%)",
-    filter: "blur(40px)",
+    background: "radial-gradient(ellipse, rgba(200, 70, 15, 0.2), transparent 65%)",
+    filter: "blur(60px)",
     pointerEvents: "none",
   },
   content: {
