@@ -299,7 +299,7 @@ const styles: Record<string, React.CSSProperties> = {
   linkIndex: {
     fontFamily: "var(--font-mono)",
     fontSize: 10,
-    color: "rgba(255, 155, 70, 0.7)",
+    color: "var(--amber)",
   },
   linkLabel: {
     fontFamily: "var(--font-body)",

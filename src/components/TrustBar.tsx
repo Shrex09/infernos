@@ -5,9 +5,12 @@ const clients = [
   "Shubharambh Events",
   "Muscle Build Nutrition",
   "Mayur Nursery",
-  "MediCore",
+
   "MGTech Systems",
   "Yashraj Business Group",
+  "Natural Photo Studios",
+  "Noble Security Services",
+  "E-Tech Elevators",
 ];
 
 const TrustBar: React.FC = () => (
