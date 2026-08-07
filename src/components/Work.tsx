@@ -61,11 +61,28 @@ const projects: Project[] = [
     features: ["Product catalog", "Plant care guides", "Inventory management"],
   },
   {
-    title: "MediCore",
-    desc: "A complete digital healthcare ecosystem — appointments, records and care in one intelligent system.",
-    img: ["/m1.jpeg", "/m2.jpeg", "/m3.jpeg", "/m4.jpeg", "/m5.jpeg"],
-    domain: "healthcare platform",
-    features: ["Patient dashboard & booking", "Digital health records", "Smart notifications & analytics"],
+    title: "Natural Photo Studios",
+    desc: "Elegant photography studio website for Sangli's premium studio — showcasing portfolios, services, and a seamless booking experience.",
+    video: "/compressed_natural.mp4",
+    link: "https://www.naturalphotostudios.in/",
+    domain: "naturalphotostudios.in",
+    features: ["Portfolio showcase with rich visuals", "Studio services & packages", "Booking & inquiry flow"],
+  },
+  {
+    title: "Noble Security Services",
+    desc: "Professional security services company in Sangli — conveying trust, authority and reliability with a clean corporate web presence.",
+    video: "/compressed_noble.mp4",
+    link: "https://www.noblesecurityservices.com/",
+    domain: "noblesecurityservices.com",
+    features: ["Corporate service showcase", "Trust-focused design", "Contact & inquiry system"],
+  },
+  {
+    title: "E-Tech Elevators",
+    desc: "Modern elevator solutions company based in Pune — a professional corporate site showcasing products, installations and after-sales services.",
+    video: "/compressed_etech.mp4",
+    link: "https://www.e-techelevators.com/",
+    domain: "e-techelevators.com",
+    features: ["Product & solutions showcase", "Installation & service listings", "Corporate inquiry flow"],
   },
 ];
 
