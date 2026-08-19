@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useReveal, revealStyle } from "../hooks";
 
 interface Project {
@@ -86,42 +86,64 @@ const projects: Project[] = [
   },
 ];
 
+const TOTAL = projects.length;
+
+/** Shortest signed distance (in index units) from `pos` to card `i`, wrapping around the loop. */
+const wrappedDelta = (i: number, pos: number) => {
+  let d = i - pos;
+  d -= TOTAL * Math.round(d / TOTAL);
+  return d;
+};
+
+const normalize = (pos: number) => ((pos % TOTAL) + TOTAL) % TOTAL;
+
 const Work: React.FC = () => {
-  const [index, setIndex] = useState(0);
-  const [slideIndex, setSlideIndex] = useState(0);
-  const pausedRef = useRef(false);
   const head = useReveal();
   const body = useReveal();
 
-  // Auto-rotate (pauses on hover)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!pausedRef.current) setIndex((prev) => (prev + 1) % projects.length);
-    }, 4200);
-    return () => clearInterval(interval);
-  }, []);
+  const [pos, setPos] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const drag = useRef({ startX: 0, startPos: 0, moved: 0, stepPx: 300 });
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
-  // Slideshow for image-based projects
+  // Videos only truly autoplay on mount in React, so drive play/pause
+  // imperatively as the carousel rotates to keep the near-center cards live.
   useEffect(() => {
-    const current = projects[index];
-    if (!Array.isArray(current.img)) return;
-    const images = current.img;
-    const interval = setInterval(() => {
-      setSlideIndex((prev) => (prev + 1) % images.length);
-    }, 2000);
-    return () => clearInterval(interval);
-  }, [index]);
+    projects.forEach((_, i) => {
+      const v = videoRefs.current[i];
+      if (!v) return;
+      if (Math.abs(wrappedDelta(i, pos)) < 1.5) v.play().catch(() => {});
+      else v.pause();
+    });
+  }, [pos]);
 
-  const getPosition = (i: number) => {
-    const diff = (i - index + projects.length) % projects.length;
-    if (diff === 0) return "center";
-    if (diff === 1) return "right";
-    if (diff === projects.length - 1) return "left";
-    return "hidden";
+  const settle = (next: number) => setPos(normalize(Math.round(next)));
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    const wrap = wrapRef.current;
+    const cardWidth = wrap ? wrap.clientWidth * Math.min(0.42, 380 / wrap.clientWidth) : 380;
+    drag.current = { startX: e.clientX, startPos: pos, moved: 0, stepPx: Math.max(cardWidth * 0.78, 140) };
+    setDragging(true);
+    (e.target as Element).setPointerCapture?.(e.pointerId);
   };
 
-  const prev = () => setIndex((i) => (i - 1 + projects.length) % projects.length);
-  const next = () => setIndex((i) => (i + 1) % projects.length);
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!dragging) return;
+    const dx = e.clientX - drag.current.startX;
+    drag.current.moved = Math.max(drag.current.moved, Math.abs(dx));
+    setPos(drag.current.startPos - dx / drag.current.stepPx);
+  };
+
+  const endDrag = () => {
+    if (!dragging) return;
+    setDragging(false);
+    settle(pos);
+  };
+
+  const goTo = (i: number) => settle(pos + wrappedDelta(i, pos));
+
+  const activeIndex = Math.round(normalize(pos));
 
   return (
     <section id="work" className="section" style={styles.section}>
@@ -133,54 +155,102 @@ const Work: React.FC = () => {
             Shipped &amp; running <span className="text-gradient">in production</span>
           </h2>
           <p className="section-sub">
-            Real products for real businesses — click any project to open the
-            live site.
+            Real products for real businesses — drag to spin through the
+            projects, or click a card to open the live site.
           </p>
         </div>
 
-        <div
-          ref={body.ref}
-          style={{ ...styles.carouselBox, ...revealStyle(body.visible, 150) }}
-          onMouseEnter={() => (pausedRef.current = true)}
-          onMouseLeave={() => (pausedRef.current = false)}
-        >
-          <div style={styles.carouselWrapper}>
+        <div ref={body.ref} style={{ ...revealStyle(body.visible, 150) }}>
+          <div
+            ref={wrapRef}
+            className="work-carousel-box"
+            style={{ ...styles.carouselBox, touchAction: "pan-y", cursor: dragging ? "grabbing" : "grab" }}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={endDrag}
+            onPointerCancel={endDrag}
+            onPointerLeave={dragging ? endDrag : undefined}
+          >
             {projects.map((project, i) => {
-              const position = getPosition(i);
+              const delta = wrappedDelta(i, pos);
+              const abs = Math.abs(delta);
+              const isCenter = abs < 0.5;
+              const visible = abs < 1.8;
+              const scale = Math.max(0.55, 1 - Math.min(abs, 3) * 0.16);
+              const rotateY = Math.max(-60, Math.min(60, delta * -20));
+              // Immediate neighbours stay fully opaque — on this light theme a
+              // faded white card against a near-white page just dissolves into
+              // nothing, so depth comes from scale/rotation, not transparency.
+              // Anything past the immediate neighbour drops out fast instead
+              // of lingering as a washed-out ghost.
+              const opacity = Math.max(0, Math.min(1, 1 - Math.max(0, abs - 1) * 1.25));
+              const zIndex = Math.round(200 - abs * 10);
+
+              const activate = () => {
+                if (isCenter) {
+                  if (project.link) window.open(project.link, "_blank", "noopener,noreferrer");
+                } else {
+                  goTo(i);
+                }
+              };
+
               return (
                 <div
                   key={project.title}
-                  onClick={() => project.link && window.open(project.link, "_blank")}
+                  className="work-card"
+                  role="button"
+                  tabIndex={visible ? 0 : -1}
+                  aria-label={isCenter ? `Open ${project.title} — visit live site` : `Bring ${project.title} to center`}
+                  onClick={(e) => {
+                    if (drag.current.moved > 6) {
+                      e.preventDefault();
+                      return;
+                    }
+                    activate();
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      activate();
+                    }
+                  }}
                   style={{
                     ...styles.card,
-                    ...(position === "center" && styles.center),
-                    ...(position === "left" && styles.left),
-                    ...(position === "right" && styles.right),
-                    ...(position === "hidden" && styles.hidden),
-                    cursor: project.link ? "pointer" : "default",
+                    transform: `translate(-50%, -50%) translateX(${delta * 78}%) rotateY(${rotateY}deg) scale(${scale})`,
+                    opacity,
+                    zIndex,
+                    pointerEvents: visible ? "auto" : "none",
+                    transition: dragging
+                      ? "none"
+                      : "transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s ease, box-shadow 0.5s ease, border-color 0.5s ease, background-color 0.3s ease",
+                    cursor: isCenter && project.link ? "pointer" : "pointer",
+                    ...(isCenter && styles.cardCenter),
                   }}
                 >
-                  <div style={styles.mediaWrap}>
+                  <div className="work-media" style={styles.mediaWrap}>
                     {project.video ? (
-                      <video src={project.video} style={styles.media} autoPlay loop muted playsInline />
-                    ) : Array.isArray(project.img) ? (
-                      <img
-                        src={position === "center" ? project.img[slideIndex % project.img.length] : project.img[0]}
-                        alt={project.title}
+                      <video
+                        ref={(el) => (videoRefs.current[i] = el)}
+                        src={project.video}
                         style={styles.media}
+                        autoPlay={abs < 1.5}
+                        loop
+                        muted
+                        playsInline
+                        preload="metadata"
                       />
+                    ) : Array.isArray(project.img) ? (
+                      <img src={project.img[0]} alt={project.title} style={styles.media} draggable={false} />
                     ) : null}
-                    {project.link && position === "center" && (
-                      <span style={styles.liveChip}>● LIVE — VISIT ↗</span>
-                    )}
+                    {project.link && isCenter && <span style={styles.liveChip}>● LIVE — VISIT ↗</span>}
                   </div>
-                  <div style={styles.cardContent}>
+                  <div className="work-card-content" style={styles.cardContent}>
                     <div style={styles.cardTitleRow}>
                       <h3 style={styles.cardTitle}>{project.title}</h3>
                       {project.domain && <span style={styles.domain}>{project.domain}</span>}
                     </div>
-                    <p style={styles.cardDesc}>{project.desc}</p>
-                    <ul style={styles.featuresList}>
+                    <p className="work-desc" style={styles.cardDesc}>{project.desc}</p>
+                    <ul className="work-features" style={styles.featuresList}>
                       {project.features.map((feature) => (
                         <li key={feature} style={styles.featureItem}>
                           <span style={styles.featureTick}>›</span> {feature}
@@ -193,24 +263,27 @@ const Work: React.FC = () => {
             })}
           </div>
 
-          {/* Controls */}
-          <button style={{ ...styles.arrow, left: 8 }} onClick={prev} aria-label="Previous project">‹</button>
-          <button style={{ ...styles.arrow, right: 8 }} onClick={next} aria-label="Next project">›</button>
-        </div>
+          <p style={styles.dragHint}>← Drag to spin through projects →</p>
 
-        <div style={styles.dots}>
-          {projects.map((p, i) => (
-            <button
-              key={p.title}
-              onClick={() => setIndex(i)}
-              aria-label={`Show ${p.title}`}
-              style={{
-                ...styles.dot,
-                width: i === index ? 28 : 8,
-                background: i === index ? "linear-gradient(90deg, #e8431c, #ffa53c)" : "var(--border)",
-              }}
-            />
-          ))}
+          <div style={styles.dots}>
+            {projects.map((p, i) => (
+              <button
+                key={p.title}
+                onClick={() => goTo(i)}
+                aria-label={`Show ${p.title}`}
+                aria-current={i === activeIndex}
+                style={styles.dotHit}
+              >
+                <span
+                  style={{
+                    ...styles.dot,
+                    width: i === activeIndex ? 28 : 8,
+                    background: i === activeIndex ? "linear-gradient(90deg, #e8431c, #ffa53c)" : "var(--border)",
+                  }}
+                />
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -244,62 +317,33 @@ const styles: Record<string, React.CSSProperties> = {
   carouselBox: {
     position: "relative",
     width: "100%",
-    height: 600,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  carouselWrapper: {
-    position: "relative",
-    width: "100%",
     height: 580,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
     perspective: "1400px",
+    userSelect: "none",
   },
   card: {
     position: "absolute",
-    width: "min(400px, 86vw)",
-    height: 560,
+    left: "50%",
+    top: "50%",
+    width: "min(380px, 84vw)",
+    height: 540,
     borderRadius: 20,
     overflow: "hidden",
     background: "var(--bg-2)",
     border: "1px solid var(--border)",
-    transition:
-      "transform 0.85s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.85s ease, border-color 0.85s ease",
     willChange: "transform, opacity",
     backdropFilter: "blur(12px)",
     display: "flex",
     flexDirection: "column",
     boxShadow: "0 10px 40px -10px rgba(232, 67, 28, 0.12), 0 2px 12px -4px rgba(0,0,0,0.08)",
   },
-  center: {
-    transform: "translateX(0) scale(1)",
-    zIndex: 3,
-    opacity: 1,
+  cardCenter: {
     boxShadow: "0 30px 80px -20px rgba(232, 67, 28, 0.35), 0 8px 30px -8px rgba(0,0,0,0.12)",
     border: "1.5px solid rgba(255, 140, 60, 0.5)",
   },
-  left: {
-    transform: "translateX(-340px) rotateY(22deg) scale(0.82)",
-    zIndex: 2,
-    opacity: 0.65,
-  },
-  right: {
-    transform: "translateX(340px) rotateY(-22deg) scale(0.82)",
-    zIndex: 2,
-    opacity: 0.65,
-  },
-  hidden: {
-    transform: "translateX(0) scale(0.7)",
-    zIndex: 1,
-    opacity: 0,
-    pointerEvents: "none",
-  },
   mediaWrap: {
     position: "relative",
-    height: 230,
+    height: 220,
     flexShrink: 0,
   },
   media: {
@@ -315,7 +359,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "var(--font-mono)",
     fontSize: 11,
     fontWeight: 600,
-    color: "var(--accent-bright)",
+    color: "var(--accent-text)",
     background: "var(--bg)",
     border: "1px solid rgba(255, 106, 43, 0.4)",
     borderRadius: 999,
@@ -347,7 +391,7 @@ const styles: Record<string, React.CSSProperties> = {
   domain: {
     fontFamily: "var(--font-mono)",
     fontSize: 11,
-    color: "var(--accent-bright)",
+    color: "var(--accent-text)",
   },
   cardDesc: {
     color: "var(--muted)",
@@ -370,41 +414,37 @@ const styles: Record<string, React.CSSProperties> = {
     lineHeight: 1.5,
   },
   featureTick: {
-    color: "var(--accent-bright)",
+    color: "var(--accent-text)",
     fontWeight: 700,
   },
-  arrow: {
-    position: "absolute",
-    top: "50%",
-    transform: "translateY(-50%)",
-    zIndex: 5,
-    width: 46,
-    height: 46,
-    borderRadius: "50%",
-    border: "1px solid rgba(255, 130, 55, 0.3)",
-    background: "rgba(18, 10, 7, 0.8)",
-    color: "#ffc296",
-    fontSize: 26,
-    lineHeight: 1,
-    cursor: "pointer",
-    backdropFilter: "blur(8px)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingBottom: 4,
-    transition: "all 0.25s ease",
+  dragHint: {
+    textAlign: "center",
+    fontFamily: "var(--font-mono)",
+    fontSize: 12,
+    letterSpacing: "0.04em",
+    color: "var(--faint)",
+    marginTop: 6,
   },
   dots: {
     display: "flex",
-    gap: 8,
     justifyContent: "center",
-    marginTop: 28,
+    marginTop: 8,
   },
-  dot: {
-    height: 8,
-    borderRadius: 999,
+  dotHit: {
+    width: 36,
+    height: 36,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    background: "none",
     border: "none",
     cursor: "pointer",
+    padding: 0,
+  },
+  dot: {
+    display: "block",
+    height: 8,
+    borderRadius: 999,
     transition: "all 0.35s cubic-bezier(0.16,1,0.3,1)",
   },
 };
