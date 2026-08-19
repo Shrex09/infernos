@@ -138,9 +138,10 @@ const Team: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const statsRef = useRef<HTMLDivElement>(null);
 
-  // Auto-rotate selected member every 4 seconds
+  // Auto-rotate selected member every 8 seconds
   useEffect(() => {
     if (!selectedId || isPlaying) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const timer = setInterval(() => {
       setSelectedId((current) => {
@@ -163,7 +164,7 @@ const Team: React.FC = () => {
 
         <div ref={head.ref} style={{ ...styles.header, ...revealStyle(head.visible) }}>
           <span className="kicker" style={{ color: "var(--amber)", letterSpacing: "0.2em" }}>SELECT YOUR FIGHTER</span>
-          <h2 className="section-heading" style={{ fontFamily: "monospace", textTransform: "uppercase", textShadow: "4px 4px 0 rgba(232,67,28,0.5)" }}>
+          <h2 className="section-heading" style={{ fontFamily: "var(--font-mono)", textTransform: "uppercase", textShadow: "4px 4px 0 rgba(232,67,28,0.5)" }}>
             Meet the <span className="text-gradient">Squad</span>
           </h2>
         </div>
@@ -174,16 +175,28 @@ const Team: React.FC = () => {
           <div className="team-grid">
             {dailyTeam.map((member) => {
               const isSelected = selectedId === member.id;
+              const select = () => {
+                setSelectedId(member.id);
+                if (window.innerWidth <= 860) {
+                  setTimeout(() => {
+                    statsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }, 50);
+                }
+              };
+
               return (
                 <div
                   key={member.id}
+                  role="button"
+                  tabIndex={0}
+                  aria-pressed={isSelected}
+                  aria-label={`Select ${member.name}, ${member.role}`}
                   onMouseEnter={() => setSelectedId(member.id)}
-                  onClick={() => {
-                    setSelectedId(member.id);
-                    if (window.innerWidth <= 860) {
-                      setTimeout(() => {
-                        statsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                      }, 50);
+                  onClick={select}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      select();
                     }
                   }}
                   style={{
@@ -228,6 +241,8 @@ const Team: React.FC = () => {
                       height="100%"
                       frameBorder="0"
                       scrolling="no"
+                      sandbox="allow-scripts allow-same-origin"
+                      referrerPolicy="no-referrer"
                       style={{ background: "#fff", position: "absolute", inset: 0 }}
                       title="Pacman"
                     />
@@ -334,7 +349,7 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: 4,
   },
   slotName: {
-    fontFamily: "monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 14,
     fontWeight: "bold",
     textTransform: "uppercase",
@@ -371,7 +386,7 @@ const styles: Record<string, React.CSSProperties> = {
     paddingBottom: 15,
   },
   fighterName: {
-    fontFamily: "monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 32,
     margin: 0,
     textTransform: "uppercase",
@@ -401,7 +416,7 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 15,
   },
   statLabel: {
-    fontFamily: "monospace",
+    fontFamily: "var(--font-mono)",
     width: 130,
     fontSize: 13,
     color: "var(--muted)",
@@ -424,19 +439,19 @@ const styles: Record<string, React.CSSProperties> = {
     border: "none",
     cursor: "pointer",
     width: "100%",
-    fontFamily: "monospace",
+    fontFamily: "var(--font-mono)",
     textAlign: "center",
     marginTop: "auto",
     paddingTop: 20,
     fontSize: 16,
-    animation: "blink 1.5s infinite",
+    animation: "press-start-pulse 1.5s infinite",
     textShadow: "0 0 10px currentColor",
   },
   closeGameBtn: {
     background: "rgba(0,0,0,0.5)",
     border: "1px solid",
     cursor: "pointer",
-    fontFamily: "monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 14,
     padding: "8px 16px",
     marginBottom: 15,
@@ -445,15 +460,5 @@ const styles: Record<string, React.CSSProperties> = {
     transition: "all 0.2s ease",
   },
 };
-
-// Add blinking animation for "PRESS START" text
-const styleSheet = document.createElement("style");
-styleSheet.innerText = `
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
-`;
-document.head.appendChild(styleSheet);
 
 export default Team;
