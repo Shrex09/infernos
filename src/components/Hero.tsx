@@ -16,13 +16,21 @@ const HeroGlobe: React.FC = () => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     let w = 0;
     let h = 0;
     let raf = 0;
+    let inView = true;
+
+    // Denser mesh reads as clutter behind text on small screens, so thin
+    // out the point/link count and dim it there.
+    const isMobile = window.innerWidth <= 640;
+    const alphaScale = isMobile ? 0.55 : 1;
 
     // ── Geometry: evenly distributed points on a unit sphere
-    const N = 340;
+    const N = isMobile ? 150 : 340;
     const pts: { x: number; y: number; z: number }[] = [];
     const golden = Math.PI * (3 - Math.sqrt(5));
     for (let i = 0; i < N; i++) {
@@ -33,7 +41,8 @@ const HeroGlobe: React.FC = () => {
 
     // ── Static topology: connect near neighbours once (not per frame)
     const links: [number, number][] = [];
-    const MAX_D2 = 0.24 * 0.24;
+    const linkReach = isMobile ? 0.19 : 0.24;
+    const MAX_D2 = linkReach * linkReach;
     for (let i = 0; i < N; i++) {
       for (let j = i + 1; j < N; j++) {
         const dx = pts[i].x - pts[j].x;
@@ -55,11 +64,13 @@ const HeroGlobe: React.FC = () => {
       const dt = Math.min((now - last) / 16.667, 3);
       last = now;
 
-      rotY += 0.0022 * dt;
-      // Smoothly chase the cursor for parallax (frame-rate independent easing)
-      const ease = 1 - Math.pow(0.955, dt);
-      tiltX += ((mouseRef.current.y - 0.5) * 0.45 - tiltX) * ease;
-      tiltY += ((mouseRef.current.x - 0.5) * 0.6 - tiltY) * ease;
+      if (!reduceMotion) {
+        rotY += 0.0022 * dt;
+        // Smoothly chase the cursor for parallax (frame-rate independent easing)
+        const ease = 1 - Math.pow(0.955, dt);
+        tiltX += ((mouseRef.current.y - 0.5) * 0.45 - tiltX) * ease;
+        tiltY += ((mouseRef.current.x - 0.5) * 0.6 - tiltY) * ease;
+      }
 
       const R = Math.min(w, h) * 0.44;
       const cx = w / 2;
@@ -88,7 +99,7 @@ const HeroGlobe: React.FC = () => {
         const pa = proj[a];
         const pb = proj[b];
         const front = 1 - (pa.z + pb.z) / 2; // 0 back … 2 front
-        ctx.strokeStyle = `rgba(185, 65, 15, ${0.12 + front * 0.38})`;
+        ctx.strokeStyle = `rgba(185, 65, 15, ${(0.12 + front * 0.38) * alphaScale})`;
         ctx.beginPath();
         ctx.moveTo(pa.sx, pa.sy);
         ctx.lineTo(pb.sx, pb.sy);
@@ -98,13 +109,17 @@ const HeroGlobe: React.FC = () => {
       // Nodes
       for (const p of proj) {
         const front = (1 - p.z) / 2; // 1 front, 0 back
-        ctx.fillStyle = `rgba(220, ${80 + front * 100}, ${20 + front * 30}, ${0.3 + front * 0.65})`;
+        ctx.fillStyle = `rgba(220, ${80 + front * 100}, ${20 + front * 30}, ${(0.3 + front * 0.65) * alphaScale})`;
         ctx.beginPath();
         ctx.arc(p.sx, p.sy, 1.2 + p.s * 1.5 * front + 0.5, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      raf = requestAnimationFrame(render);
+      // A user with reduced-motion preference gets one settled frame, not
+      // a perpetually spinning/tilting sphere — and once scrolled out of
+      // view, the loop stops entirely rather than burning CPU/GPU/battery
+      // for a canvas nobody can see.
+      if (!reduceMotion && inView) raf = requestAnimationFrame(render);
     };
 
     const resize = () => {
@@ -122,18 +137,33 @@ const HeroGlobe: React.FC = () => {
       };
     };
 
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const wasInView = inView;
+        inView = entry.isIntersecting;
+        if (inView && !wasInView && !reduceMotion) {
+          last = performance.now();
+          cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(render);
+        }
+      },
+      { threshold: 0 }
+    );
+
     resize();
+    observer.observe(canvas);
     window.addEventListener("resize", resize);
     window.addEventListener("mousemove", onMouse);
     raf = requestAnimationFrame(render);
     return () => {
       cancelAnimationFrame(raf);
+      observer.disconnect();
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", onMouse);
     };
   }, []);
 
-  return <canvas ref={canvasRef} style={styles.canvas} />;
+  return <canvas ref={canvasRef} className="hero-globe-canvas" style={styles.canvas} />;
 };
 
 /* ────────────────────────────────────────
@@ -179,13 +209,6 @@ const TypeLine: React.FC = () => {
 /* ────────────────────────────────────────
    HERO
 ──────────────────────────────────────── */
-const heroMetrics = [
-  { value: "10+", label: "Projects delivered" },
-  { value: "96%", label: "Client satisfaction" },
-  { value: "6", label: "Products in production" },
-  { value: "2+", label: "Years building" },
-];
-
 const scrollTo = (id: string) =>
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 
@@ -217,7 +240,7 @@ const Hero: React.FC = () => {
       </div>
 
       {/* Radial vignettes so content stays readable over the globe */}
-      <div style={styles.vignette} />
+      <div className="hero-vignette" style={styles.vignette} />
 
       <div style={styles.content}>
         <div style={{ ...styles.statusChip, ...enter(0) }} className="glass">
@@ -249,20 +272,17 @@ const Hero: React.FC = () => {
             View our work
           </button>
         </div>
-
-        <div style={{ ...styles.metricsRow, ...enter(5) }}>
-          {heroMetrics.map((m, i) => (
-            <React.Fragment key={m.label}>
-              {i > 0 && <div style={styles.metricDivider} className="hide-mobile" />}
-              <div style={styles.metric}>
-                <span style={styles.metricValue}>{m.value}</span>
-                <span style={styles.metricLabel}>{m.label}</span>
-              </div>
-            </React.Fragment>
-          ))}
-        </div>
       </div>
 
+      <button
+        style={styles.scrollHint}
+        onClick={() => scrollTo("work")}
+        aria-label="Scroll to see more"
+      >
+        <span style={styles.scrollPill}>
+          <span style={styles.scrollDot} />
+        </span>
+      </button>
     </section>
   );
 };
@@ -367,7 +387,7 @@ const styles: Record<string, React.CSSProperties> = {
     overflow: "hidden",
   },
   terminalText: {
-    color: "#e8431c",
+    color: "var(--accent-text)",
     whiteSpace: "nowrap",
   },
   actions: {
@@ -376,42 +396,16 @@ const styles: Record<string, React.CSSProperties> = {
     flexWrap: "wrap",
     justifyContent: "center",
   },
-  metricsRow: {
-    display: "flex",
-    alignItems: "center",
-    gap: 28,
-    marginTop: 22,
-    flexWrap: "wrap",
-    justifyContent: "center",
-  },
-  metricDivider: {
-    width: 1,
-    height: 36,
-    background: "linear-gradient(180deg, transparent, rgba(0,0,0,0.18), transparent)",
-  },
-  metric: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 2,
-    alignItems: "center",
-  },
-  metricValue: {
-    fontFamily: "var(--font-mono)",
-    fontWeight: 600,
-    fontSize: 22,
-    color: "var(--text)",
-  },
-  metricLabel: {
-    fontSize: 12.5,
-    color: "var(--faint)",
-    letterSpacing: "0.04em",
-  },
   scrollHint: {
     position: "absolute",
     bottom: 28,
     left: "50%",
     transform: "translateX(-50%)",
     zIndex: 2,
+    background: "none",
+    border: "none",
+    cursor: "pointer",
+    padding: 10,
   },
   scrollPill: {
     width: 24,

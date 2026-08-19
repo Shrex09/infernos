@@ -124,6 +124,7 @@ export const useTilt = (maxDeg = 9) => {
   };
 
   const onMouseMove = (e: React.MouseEvent) => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const card = ref.current;
     if (!card) return;
     const rect = card.getBoundingClientRect();
