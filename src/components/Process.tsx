@@ -218,11 +218,13 @@ const Process: React.FC = () => {
   const body = useReveal();
   const current = phases[active];
 
-  // Auto-advance every 6s unless the user is hovering the section.
-  // Starts only once the stepper scrolls into view, so visitors always
-  // watch the fuse ignite from phase 01 instead of arriving mid-burn.
+  // Auto-advance every 6s unless the user is hovering/focused within the
+  // section, or has asked the OS for reduced motion. Starts only once the
+  // stepper scrolls into view, so visitors always watch the fuse ignite
+  // from phase 01 instead of arriving mid-burn.
   useEffect(() => {
     if (!body.visible) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const interval = setInterval(() => {
       if (!pausedRef.current) setActive((a) => (a + 1) % phases.length);
     }, 6000);
@@ -236,6 +238,10 @@ const Process: React.FC = () => {
       style={styles.section}
       onMouseEnter={() => (pausedRef.current = true)}
       onMouseLeave={() => (pausedRef.current = false)}
+      onFocus={() => (pausedRef.current = true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) pausedRef.current = false;
+      }}
     >
       <div className="section-inner">
         <div ref={head.ref} style={{ ...styles.header, ...revealStyle(head.visible) }}>
@@ -497,7 +503,7 @@ const styles: Record<string, React.CSSProperties> = {
     color: "var(--text)",
   },
   check: {
-    color: "var(--accent-bright)",
+    color: "var(--accent-text)",
     fontWeight: 700,
     fontSize: 14,
   },

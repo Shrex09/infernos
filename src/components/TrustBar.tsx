@@ -6,7 +6,7 @@ const clients = [
   "Muscle Build Nutrition",
   "Mayur Nursery",
 
-  "MGTech Systems",
+
   "Yashraj Business Group",
   "Natural Photo Studios",
   "Noble Security Services",
@@ -15,7 +15,7 @@ const clients = [
 
 const TrustBar: React.FC = () => (
   <section style={styles.section}>
-    <p style={styles.label}>TRUSTED BY GROWING BUSINESSES ACROSS INDUSTRIES</p>
+    <p style={styles.label}>PROJECTS SHIPPED ACROSS INDUSTRIES</p>
     <div style={styles.marqueeWrap}>
       <div style={styles.fadeLeft} />
       <div style={styles.fadeRight} />
