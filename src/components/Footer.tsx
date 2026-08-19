@@ -3,6 +3,19 @@ import { useTheme } from "../ThemeContext";
 
 type SendState = "idle" | "sending" | "sent" | "error";
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_LEN = { name: 120, phone: 30, email: 160, message: 4000 };
+
+/**
+ * Guards against CSV/formula injection: Google Sheets (and Excel) will
+ * execute a cell that starts with =, +, -, @ or a tab/CR as a formula.
+ * Prefixing with an apostrophe forces it to render as plain text.
+ */
+const sheetSafe = (value: string) => {
+  const trimmed = value.trim();
+  return /^[=+\-@\t\r]/.test(trimmed) ? `'${trimmed}` : trimmed;
+};
+
 const inputBase: React.CSSProperties = {
   width: "100%",
   background: "var(--surface)",
@@ -59,27 +72,52 @@ const Footer: React.FC = () => {
   // This will be the URL of your deployed Google Apps Script
   const scriptUrl = import.meta.env.VITE_GOOGLE_SHEET_URL;
 
+  const [fieldError, setFieldError] = useState<string | null>(null);
+
   const handleSubmit = async () => {
     if (cooldown > 0) return;
 
-    if (!name || !phone || !email || !message) {
+    const trimmedName = name.trim();
+    const trimmedPhone = phone.trim();
+    const trimmedEmail = email.trim();
+    const trimmedMessage = message.trim();
+
+    if (!trimmedName || !trimmedPhone || !trimmedEmail || !trimmedMessage) {
+      setFieldError("All fields are required.");
+      setState("error");
+      return;
+    }
+    if (!EMAIL_RE.test(trimmedEmail)) {
+      setFieldError("Enter a valid email address.");
+      setState("error");
+      return;
+    }
+    if (
+      trimmedName.length > MAX_LEN.name ||
+      trimmedPhone.length > MAX_LEN.phone ||
+      trimmedEmail.length > MAX_LEN.email ||
+      trimmedMessage.length > MAX_LEN.message
+    ) {
+      setFieldError("One of the fields is too long.");
       setState("error");
       return;
     }
     if (!scriptUrl) {
       console.error("Missing VITE_GOOGLE_SHEET_URL in your .env.local file");
+      setFieldError(null);
       setState("error");
       return;
     }
 
     try {
       setState("sending");
+      setFieldError(null);
 
       const formData = new FormData();
-      formData.append("name", name);
-      formData.append("phone", phone);
-      formData.append("email", email);
-      formData.append("message", message);
+      formData.append("name", sheetSafe(trimmedName));
+      formData.append("phone", sheetSafe(trimmedPhone));
+      formData.append("email", sheetSafe(trimmedEmail));
+      formData.append("message", sheetSafe(trimmedMessage));
 
       // We use no-cors so Google accepts the cross-origin POST request directly
       await fetch(scriptUrl, {
@@ -105,7 +143,10 @@ const Footer: React.FC = () => {
     idle: null,
     sending: { text: "▸ sending…", color: "#ffc296" },
     sent: { text: "✓ Message sent — we'll get back to you within 24 hours.", color: "#7df0c0" },
-    error: { text: "✗ Could not send. Check the fields, or email us directly below.", color: "#ff8a8a" },
+    error: {
+      text: fieldError ? `✗ ${fieldError}` : "✗ Could not send. Check the fields, or email us directly below.",
+      color: "#ff8a8a",
+    },
   };
   const status = statusLine[state];
 
@@ -127,8 +168,9 @@ const Footer: React.FC = () => {
             </p>
 
             <div style={styles.form}>
-              <label style={styles.label}>your_name</label>
+              <label style={styles.label} htmlFor="contact-name">your_name</label>
               <input
+                id="contact-name"
                 type="text"
                 placeholder="John Doe"
                 value={name}
@@ -136,10 +178,13 @@ const Footer: React.FC = () => {
                 onFocus={focusOn}
                 onBlur={focusOff}
                 style={inputBase}
+                maxLength={MAX_LEN.name}
+                autoComplete="name"
               />
 
-              <label style={styles.label}>your_phone</label>
+              <label style={styles.label} htmlFor="contact-phone">your_phone</label>
               <input
+                id="contact-phone"
                 type="tel"
                 placeholder="+91 1234 567 8900"
                 value={phone}
@@ -147,10 +192,13 @@ const Footer: React.FC = () => {
                 onFocus={focusOn}
                 onBlur={focusOff}
                 style={inputBase}
+                maxLength={MAX_LEN.phone}
+                autoComplete="tel"
               />
 
-              <label style={styles.label}>your_email</label>
+              <label style={styles.label} htmlFor="contact-email">your_email</label>
               <input
+                id="contact-email"
                 type="email"
                 placeholder="you@company.com"
                 value={email}
@@ -158,16 +206,20 @@ const Footer: React.FC = () => {
                 onFocus={focusOn}
                 onBlur={focusOff}
                 style={inputBase}
+                maxLength={MAX_LEN.email}
+                autoComplete="email"
               />
 
-              <label style={styles.label}>project_brief</label>
+              <label style={styles.label} htmlFor="contact-message">project_brief</label>
               <textarea
+                id="contact-message"
                 placeholder="What are you building? Timeline? Budget range?"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onFocus={focusOn}
                 onBlur={focusOff}
                 style={{ ...inputBase, minHeight: 110, resize: "vertical" }}
+                maxLength={MAX_LEN.message}
               />
 
               <button
@@ -188,7 +240,7 @@ const Footer: React.FC = () => {
               </button>
 
               {status && (
-                <span style={{ ...styles.status, color: status.color }}>{status.text}</span>
+                <span role="status" aria-live="polite" style={{ ...styles.status, color: status.color }}>{status.text}</span>
               )}
             </div>
           </div>
@@ -202,6 +254,7 @@ const Footer: React.FC = () => {
                   <a
                     key={l}
                     href="#services"
+                    className="footer-link"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById("services")?.scrollIntoView({ behavior: "smooth" });
@@ -226,6 +279,7 @@ const Footer: React.FC = () => {
                   <a
                     key={l.id + l.label}
                     href={`#${l.id}`}
+                    className="footer-link"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById(l.id)?.scrollIntoView({ behavior: "smooth" });
@@ -301,7 +355,7 @@ const Footer: React.FC = () => {
           <div style={styles.locationInfo}>
             <span style={styles.colTitle}>location/</span>
             <h3 style={styles.locationHeading}>Where we work from</h3>
-            <span style={styles.coords}>16.861751° N, 74.601806° E</span>
+            <span style={styles.coords}>16.847433° N, 74.596833° E</span>
             <p style={styles.locationCity}>Sangli, Maharashtra, India</p>
             <p style={styles.locationNote}>
               Working with clients everywhere — drop by or book a call.
@@ -448,7 +502,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "var(--font-mono)",
     fontWeight: 600,
     fontSize: 14,
-    color: "var(--accent-bright)",
+    color: "var(--accent-text)",
     letterSpacing: "0.06em",
   },
   linkList: {
@@ -490,7 +544,7 @@ const styles: Record<string, React.CSSProperties> = {
   responseText: {
     fontFamily: "var(--font-mono)",
     fontSize: 12,
-    color: "var(--accent-bright)",
+    color: "var(--accent-text)",
   },
   locationPanel: {
     display: "flex",
@@ -584,7 +638,7 @@ const styles: Record<string, React.CSSProperties> = {
   emailLink: {
     fontFamily: "var(--font-mono)",
     fontSize: 13.5,
-    color: "var(--accent-bright)",
+    color: "var(--accent-text)",
   },
 };
 
