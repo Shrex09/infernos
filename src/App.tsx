@@ -23,10 +23,10 @@ const AppInner: React.FC = () => {
       <Navbar />
       <Hero />
       <TrustBar />
+      <Work />
       <Services />
       <TechStack />
       <Process />
-      <Work />
       <Stats />
       <WhyUs />
       <Testimonials />

@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useTheme } from "../ThemeContext";
 
 const navLinks = [
+  { label: "Work", id: "work" },
   { label: "Services", id: "services" },
   { label: "Stack", id: "stack" },
   { label: "Process", id: "process" },
-  { label: "Work", id: "work" },
   { label: "Why us", id: "why" },
   { label: "Team", id: "team" },
 ];
@@ -25,15 +25,23 @@ const Navbar: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60);
+    let raf = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => setScrolled(window.scrollY > 60));
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
   }, []);
 
   // Highlight active section while scrolling
   useEffect(() => {
     const ids = navLinks.map((l) => l.id);
-    const onScroll = () => {
+    let raf = 0;
+    const updateActive = () => {
       for (let i = ids.length - 1; i >= 0; i--) {
         const el = document.getElementById(ids[i]);
         if (el && window.scrollY >= el.offsetTop - 140) {
@@ -43,8 +51,15 @@ const Navbar: React.FC = () => {
       }
       setActiveId("");
     };
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(updateActive);
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
   }, []);
 
   useEffect(() => {
@@ -219,8 +234,8 @@ const styles: Record<string, React.CSSProperties> = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    width: 36,
-    height: 36,
+    width: 44,
+    height: 44,
     borderRadius: "50%",
     cursor: "pointer",
     flexShrink: 0,
@@ -332,11 +347,15 @@ const styles: Record<string, React.CSSProperties> = {
   hamburger: {
     display: "flex",
     flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 5,
+    width: 44,
+    height: 44,
     background: "none",
     border: "none",
     cursor: "pointer",
-    padding: 8,
+    padding: 0,
   },
   hLine: {
     display: "block",
