@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTheme } from "../ThemeContext";
+import PrivacyPolicy from "./PrivacyPolicy";
 
 type SendState = "idle" | "sending" | "sent" | "error";
 
@@ -46,6 +47,8 @@ const Footer: React.FC = () => {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [agreed, setAgreed] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
   const [state, setState] = useState<SendState>("idle");
   const [cooldown, setCooldown] = useState<number>(0);
 
@@ -84,6 +87,11 @@ const Footer: React.FC = () => {
 
     if (!trimmedName || !trimmedPhone || !trimmedEmail || !trimmedMessage) {
       setFieldError("All fields are required.");
+      setState("error");
+      return;
+    }
+    if (!agreed) {
+      setFieldError("Please confirm you agree to the Privacy Policy.");
       setState("error");
       return;
     }
@@ -133,6 +141,7 @@ const Footer: React.FC = () => {
       setPhone("");
       setEmail("");
       setMessage("");
+      setAgreed(false);
     } catch (error) {
       console.error(error);
       setState("error");
@@ -221,6 +230,31 @@ const Footer: React.FC = () => {
                 style={{ ...inputBase, minHeight: 110, resize: "vertical" }}
                 maxLength={MAX_LEN.message}
               />
+
+              <div style={styles.consentRow}>
+                <input
+                  id="contact-consent"
+                  type="checkbox"
+                  checked={agreed}
+                  onChange={(e) => setAgreed(e.target.checked)}
+                  style={styles.consentCheckbox}
+                />
+                <label htmlFor="contact-consent" style={styles.consentLabel}>
+                  I agree to the{" "}
+                  <a
+                    href="#privacy"
+                    style={styles.consentLink}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setShowPrivacy(true);
+                    }}
+                  >
+                    Privacy Policy
+                  </a>{" "}
+                  and consent to being contacted about this enquiry.
+                </label>
+              </div>
 
               <button
                 className="btn-primary"
@@ -393,6 +427,13 @@ const Footer: React.FC = () => {
             <span style={styles.copyright}>
               © {new Date().getFullYear()} Inferno IT Solutions. All rights reserved.
             </span>
+            <button
+              className="footer-link"
+              onClick={() => setShowPrivacy(true)}
+              style={styles.privacyBtn}
+            >
+              Privacy Policy
+            </button>
             <span style={styles.builtWith}>built_with: React + TypeScript</span>
             <a href="mailto:connect.inferno@gmail.com" style={styles.emailLink}>
               connect.inferno@gmail.com
@@ -400,6 +441,8 @@ const Footer: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <PrivacyPolicy open={showPrivacy} onClose={() => setShowPrivacy(false)} />
     </footer>
   );
 };
@@ -485,6 +528,30 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "var(--font-mono)",
     fontSize: 13,
     marginTop: 4,
+  },
+  consentRow: {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: 10,
+    marginTop: 4,
+  },
+  consentCheckbox: {
+    width: 18,
+    height: 18,
+    marginTop: 2,
+    flexShrink: 0,
+    accentColor: "var(--accent-bright)",
+    cursor: "pointer",
+  },
+  consentLabel: {
+    fontSize: 13.5,
+    lineHeight: 1.55,
+    color: "var(--muted)",
+    cursor: "pointer",
+  },
+  consentLink: {
+    color: "var(--accent-text)",
+    textDecoration: "underline",
   },
   links: {
     flex: 1,
@@ -629,6 +696,15 @@ const styles: Record<string, React.CSSProperties> = {
   copyright: {
     fontSize: 14,
     color: "var(--faint)",
+  },
+  privacyBtn: {
+    fontSize: 13.5,
+    color: "var(--muted)",
+    background: "none",
+    border: "none",
+    padding: 0,
+    cursor: "pointer",
+    fontFamily: "var(--font-body)",
   },
   builtWith: {
     fontFamily: "var(--font-mono)",
