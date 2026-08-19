@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://infernos.co.in/sitemap.xml
+Sitemap: https://www.infernos.co.in/sitemap.xml
