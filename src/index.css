@@ -12,6 +12,11 @@
   --border-strong: rgba(220, 55, 10, 0.55);
   --accent: #d93510;
   --accent-bright: #f03d0e;
+  /* Darker than --accent-bright: passes WCAG AA (~5:1) for small text
+     (chips, labels, links) on --bg/--bg-2, where --accent-bright alone
+     only reaches ~3.7:1. Use --accent-bright for large/decorative
+     surfaces (buttons, glows) and --accent-text for readable text. */
+  --accent-text: #c62d0a;
   --amber: #c94a08;
   --green: #059669;
   --text: #0f172a;
@@ -35,11 +40,14 @@
   --border-strong: rgba(255, 115, 45, 0.5);
   --accent: #e8431c;
   --accent-bright: #ff6a2b;
+  /* On the near-black dark background, the bright accent already clears
+     AA for text, so no separate darkened value is needed here. */
+  --accent-text: #ff6a2b;
   --amber: #ffa53c;
   --green: #34d399;
   --text: #f5f0ec;
   --muted: rgba(245, 240, 236, 0.65);
-  --faint: rgba(245, 240, 236, 0.45);
+  --faint: rgba(245, 240, 236, 0.55);
   --card-shadow: none;
 }
 
@@ -81,6 +89,18 @@ body {
 a {
   text-decoration: none;
   color: inherit;
+}
+
+/* Visible keyboard-focus ring on every interactive element — the
+   saturated palette makes the browser default outline hard to see. */
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent-bright);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 ::selection {
@@ -240,7 +260,7 @@ footer[id] {
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 500;
-  color: var(--accent-bright);
+  color: var(--accent-text);
   padding: 5px 12px;
   border: 1px solid rgba(255, 130, 55, 0.25);
   border-radius: 999px;
@@ -261,6 +281,18 @@ footer[id] {
 /* ────────────────────────────────────────
    ANIMATIONS
 ──────────────────────────────────────── */
+@keyframes press-start-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+}
+
 @keyframes pulse-dot {
 
   0%,
@@ -489,6 +521,19 @@ footer[id] {
   }
 }
 
+@media (max-width: 640px) {
+  .hero-globe-canvas {
+    width: min(78vw, 78vh) !important;
+    height: min(78vw, 78vh) !important;
+    opacity: 0.7 !important;
+  }
+
+  .hero-vignette {
+    opacity: 0.94 !important;
+    background: radial-gradient(ellipse 60% 58% at 50% 46%, var(--bg) 0%, rgba(0, 0, 0, 0) 68%) !important;
+  }
+}
+
 .arcade-box {
   display: flex;
   flex-wrap: wrap;
@@ -497,12 +542,71 @@ footer[id] {
   justify-content: center;
 }
 
+/* Footer nav links read as plain text until interacted with — give them
+   an explicit link affordance on hover/focus. */
+.footer-link {
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s ease, color 0.2s ease;
+}
+
+.footer-link:hover,
+.footer-link:focus-visible {
+  text-decoration-color: currentColor;
+  color: var(--accent-text);
+}
+
 @media (max-width: 860px) {
   .arcade-box {
     flex-direction: column-reverse;
   }
 
   .hide-mobile {
+    display: none !important;
+  }
+}
+
+/* ────────────────────────────────────────
+   WORK / PROJECTS COVERFLOW
+──────────────────────────────────────── */
+/* Clamp at every width, not just <700px — the card height is fixed, so an
+   unclamped long description can silently push/clip the features list
+   underneath it (card has overflow: hidden). */
+.work-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (max-width: 700px) {
+  .work-carousel-box {
+    height: 460px !important;
+  }
+
+  .work-card {
+    height: 440px !important;
+  }
+
+  .work-media {
+    height: 150px !important;
+  }
+
+  .work-card-content {
+    padding: 16px !important;
+    gap: 6px !important;
+  }
+
+  .work-desc {
+    font-size: 13px !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .work-features li:nth-child(n + 3) {
     display: none !important;
   }
 }
