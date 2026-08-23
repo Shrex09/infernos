@@ -25,7 +25,7 @@ const services: Service[] = [
     icon: ic("M12 2a4 4 0 014 4v12a4 4 0 01-8 0V6a4 4 0 014-4zM12 18h.01"),
     title: "Mobile applications",
     description: "Native and cross-platform mobile apps with smooth performance and store-ready quality on iOS and Android.",
-    tags: ["React Native", "iOS", "Android"],
+    tags: ["Flutter", "React Native", "iOS", "Android"],
   },
   {
     icon: ic("M4 4h16v12H4zM4 20h16M9 16v4M15 16v4"),
