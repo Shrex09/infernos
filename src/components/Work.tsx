@@ -105,6 +105,21 @@ const wrappedDelta = (i: number, pos: number) => {
 
 const normalize = (pos: number) => ((pos % TOTAL) + TOTAL) % TOTAL;
 
+/** Same transform/opacity/zIndex math the JSX render uses, factored out so
+ * the drag loop can apply it directly to the DOM without going through React. */
+const cardLook = (delta: number) => {
+  const abs = Math.abs(delta);
+  const scale = Math.max(0.55, 1 - Math.min(abs, 3) * 0.16);
+  const rotateY = Math.max(-60, Math.min(60, delta * -20));
+  const opacity = Math.max(0, Math.min(1, 1 - Math.max(0, abs - 1) * 1.25));
+  return {
+    transform: `translate(-50%, -50%) translateX(${delta * 78}%) rotateY(${rotateY}deg) scale(${scale})`,
+    opacity,
+    zIndex: Math.round(200 - abs * 10),
+    pointerEvents: (abs < 1.8 ? "auto" : "none") as React.CSSProperties["pointerEvents"],
+  };
+};
+
 const Work: React.FC = () => {
   const head = useReveal();
   const body = useReveal();
@@ -112,7 +127,8 @@ const Work: React.FC = () => {
   const [pos, setPos] = useState(0);
   const [dragging, setDragging] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
-  const drag = useRef({ startX: 0, startPos: 0, moved: 0, stepPx: 300 });
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const drag = useRef({ startX: 0, startPos: 0, moved: 0, stepPx: 300, live: 0, raf: 0 });
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   // Videos only truly autoplay on mount in React, so drive play/pause
@@ -128,10 +144,33 @@ const Work: React.FC = () => {
 
   const settle = (next: number) => setPos(normalize(Math.round(next)));
 
+  // Applies live drag positions straight to the DOM via refs — bypassing
+  // React state/re-render on every pointermove, which was the actual source
+  // of the "laggy" mobile drag (9 cards' worth of reconciliation per touch
+  // event is more than a phone's JS thread can keep up with at 60fps).
+  const applyLivePositions = (p: number) => {
+    projects.forEach((_, i) => {
+      const el = cardRefs.current[i];
+      if (!el) return;
+      const look = cardLook(wrappedDelta(i, p));
+      el.style.transform = look.transform;
+      el.style.opacity = String(look.opacity);
+      el.style.zIndex = String(look.zIndex);
+      el.style.pointerEvents = look.pointerEvents ?? "";
+    });
+  };
+
   const onPointerDown = (e: React.PointerEvent) => {
     const wrap = wrapRef.current;
     const cardWidth = wrap ? wrap.clientWidth * Math.min(0.42, 380 / wrap.clientWidth) : 380;
-    drag.current = { startX: e.clientX, startPos: pos, moved: 0, stepPx: Math.max(cardWidth * 0.78, 140) };
+    drag.current = {
+      startX: e.clientX,
+      startPos: pos,
+      moved: 0,
+      stepPx: Math.max(cardWidth * 0.78, 140),
+      live: pos,
+      raf: 0,
+    };
     setDragging(true);
     (e.target as Element).setPointerCapture?.(e.pointerId);
   };
@@ -140,13 +179,20 @@ const Work: React.FC = () => {
     if (!dragging) return;
     const dx = e.clientX - drag.current.startX;
     drag.current.moved = Math.max(drag.current.moved, Math.abs(dx));
-    setPos(drag.current.startPos - dx / drag.current.stepPx);
+    drag.current.live = drag.current.startPos - dx / drag.current.stepPx;
+    if (!drag.current.raf) {
+      drag.current.raf = requestAnimationFrame(() => {
+        drag.current.raf = 0;
+        applyLivePositions(drag.current.live);
+      });
+    }
   };
 
   const endDrag = () => {
     if (!dragging) return;
+    cancelAnimationFrame(drag.current.raf);
     setDragging(false);
-    settle(pos);
+    settle(drag.current.live);
   };
 
   const goTo = (i: number) => settle(pos + wrappedDelta(i, pos));
@@ -184,15 +230,12 @@ const Work: React.FC = () => {
               const abs = Math.abs(delta);
               const isCenter = abs < 0.5;
               const visible = abs < 1.8;
-              const scale = Math.max(0.55, 1 - Math.min(abs, 3) * 0.16);
-              const rotateY = Math.max(-60, Math.min(60, delta * -20));
               // Immediate neighbours stay fully opaque — on this light theme a
               // faded white card against a near-white page just dissolves into
               // nothing, so depth comes from scale/rotation, not transparency.
               // Anything past the immediate neighbour drops out fast instead
               // of lingering as a washed-out ghost.
-              const opacity = Math.max(0, Math.min(1, 1 - Math.max(0, abs - 1) * 1.25));
-              const zIndex = Math.round(200 - abs * 10);
+              const look = cardLook(delta);
 
               const activate = () => {
                 if (isCenter) {
@@ -205,6 +248,7 @@ const Work: React.FC = () => {
               return (
                 <div
                   key={project.title}
+                  ref={(el) => (cardRefs.current[i] = el)}
                   className="work-card"
                   role="button"
                   tabIndex={visible ? 0 : -1}
@@ -224,10 +268,10 @@ const Work: React.FC = () => {
                   }}
                   style={{
                     ...styles.card,
-                    transform: `translate(-50%, -50%) translateX(${delta * 78}%) rotateY(${rotateY}deg) scale(${scale})`,
-                    opacity,
-                    zIndex,
-                    pointerEvents: visible ? "auto" : "none",
+                    transform: look.transform,
+                    opacity: look.opacity,
+                    zIndex: look.zIndex,
+                    pointerEvents: look.pointerEvents,
                     transition: dragging
                       ? "none"
                       : "transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s ease, box-shadow 0.5s ease, border-color 0.5s ease, background-color 0.3s ease",
@@ -340,7 +384,6 @@ const styles: Record<string, React.CSSProperties> = {
     background: "var(--bg-2)",
     border: "1px solid var(--border)",
     willChange: "transform, opacity",
-    backdropFilter: "blur(12px)",
     display: "flex",
     flexDirection: "column",
     boxShadow: "0 10px 40px -10px rgba(232, 67, 28, 0.12), 0 2px 12px -4px rgba(0,0,0,0.08)",
@@ -372,7 +415,6 @@ const styles: Record<string, React.CSSProperties> = {
     border: "1px solid rgba(255, 106, 43, 0.4)",
     borderRadius: 999,
     padding: "5px 12px",
-    backdropFilter: "blur(6px)",
     letterSpacing: "0.08em",
   },
   cardContent: {
