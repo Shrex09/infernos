@@ -24,14 +24,21 @@ const StatReadout: React.FC<{ stat: Stat; start: boolean; delay: number; last: b
 }) => {
   const value = useCountUp(stat.target, start);
   return (
-    <div style={{ ...styles.col, ...(last ? {} : styles.colDivider), ...revealStyle(start, delay) }}>
+    <div
+      className="stats-col"
+      style={{ ...styles.col, ...(last ? {} : styles.colDivider), ...revealStyle(start, delay) }}
+    >
       <span style={styles.tag}>// {stat.tag}</span>
-      <span style={styles.value}>
-        {value}
-        <span style={styles.suffix}>{stat.suffix}</span>
-      </span>
-      <span style={styles.label}>{stat.label}</span>
-      <span style={styles.note}>{stat.note}</span>
+      <div className="stats-head" style={styles.head}>
+        <span style={styles.value}>
+          {value}
+          <span style={styles.suffix}>{stat.suffix}</span>
+        </span>
+        <div style={styles.text}>
+          <span style={styles.label}>{stat.label}</span>
+          <span style={styles.note}>{stat.note}</span>
+        </div>
+      </div>
       <div style={styles.barTrack}>
         <div
           style={{
@@ -64,12 +71,13 @@ const Stats: React.FC = () => {
             </span>
           </div>
           <div style={styles.scanlines} />
-          <div style={styles.row}>
+          <div className="stats-row" style={styles.row}>
             {stats.map((stat, i) => (
               <StatReadout key={stat.label} stat={stat} start={visible} delay={i * 130} last={i === stats.length - 1} />
             ))}
           </div>
         </div>
+        <p className="stats-swipe-hint">← Swipe for more →</p>
       </div>
     </section>
   );
@@ -155,6 +163,19 @@ const styles: Record<string, React.CSSProperties> = {
     color: "var(--faint)",
     letterSpacing: "0.03em",
   },
+  head: {
+    display: "flex",
+    flexDirection: "column",
+    marginTop: 2,
+  },
+  text: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 2,
+    marginTop: 4,
+    flex: 1,
+    minWidth: 0,
+  },
   value: {
     fontFamily: "var(--font-mono)",
     fontWeight: 600,
@@ -162,7 +183,6 @@ const styles: Record<string, React.CSSProperties> = {
     lineHeight: 1.1,
     color: "var(--text)",
     textShadow: "0 0 40px rgba(255, 122, 47, 0.25)",
-    marginTop: 2,
   },
   suffix: {
     backgroundImage: "linear-gradient(100deg, #ff6a2b, #ffa53c)",
@@ -176,7 +196,6 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 14.5,
     color: "var(--text)",
     letterSpacing: "0.01em",
-    marginTop: 4,
   },
   note: {
     fontFamily: "var(--font-mono)",
