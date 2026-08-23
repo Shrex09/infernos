@@ -77,6 +77,14 @@ const projects: Project[] = [
     features: ["Corporate service showcase", "Trust-focused design", "Contact & inquiry system"],
   },
   {
+    title: "Samarth Security Services",
+    desc: "Premier security & facility management solutions provider in Sangli — showcasing trained guards, armed security, housekeeping, and seamless inquiry workflows.",
+    video: "/compressed_samarth.mp4",
+    link: "https://samarthsecurityservices.gadadegroup.in/",
+    domain: "samarthsecurityservices.gadadegroup.in",
+    features: ["Security & gunman services showcase", "Facility housekeeping solutions", "Direct WhatsApp & call inquiries"],
+  },
+  {
     title: "E-Tech Elevators",
     desc: "Modern elevator solutions company based in Pune — a professional corporate site showcasing products, installations and after-sales services.",
     video: "/compressed_etech.mp4",

@@ -5,11 +5,10 @@ const clients = [
   "Shubharambh Events",
   "Muscle Build Nutrition",
   "Mayur Nursery",
-
-
   "Yashraj Business Group",
   "Natural Photo Studios",
   "Noble Security Services",
+  "Samarth Security Services",
   "E-Tech Elevators",
 ];
 
