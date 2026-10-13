@@ -2704,30 +2704,27 @@ html.has-cursor * {
     margin-bottom: 16px;
   }
 
-  /* Work becomes a vertical feed on mobile */
+  /* Same pinned horizontal reel as desktop, sized so the next card peeks in */
   .work-pin {
-    min-height: 0;
-    padding: clamp(96px, 14vw, 140px) 0 40px;
+    padding: 84px 0 28px;
+    gap: 22px;
   }
 
-  .work-counter,
-  .work-foot {
-    display: none;
+  .work-counter-num {
+    font-size: 2.4rem;
   }
 
   .work-track {
-    flex-direction: column;
-    width: 100%;
-    gap: 56px;
+    gap: 14px;
   }
 
   .wcard {
-    width: 100%;
+    width: 80vw;
+    gap: 14px;
   }
 
-  .wcard-video {
-    left: 0;
-    width: 100%;
+  .work-hint {
+    display: none;
   }
 
   .wcard-domain {
@@ -2747,8 +2744,8 @@ html.has-cursor * {
   }
 
   .work-end {
-    width: 100%;
-    padding: 0;
+    width: 70vw;
+    padding-right: var(--gutter);
   }
 
   .svc-trigger {

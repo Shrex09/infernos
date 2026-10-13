@@ -4,6 +4,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 
 gsap.registerPlugin(ScrollTrigger);
+// Phones resize the viewport as the address bar shows/hides; refreshing on that
+// would make the pinned work reel jump mid-swipe
+ScrollTrigger.config({ ignoreMobileResize: true });
 
 export { gsap, ScrollTrigger };
 

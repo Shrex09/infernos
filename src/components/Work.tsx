@@ -87,8 +87,8 @@ const Work: React.FC = () => {
   useEffect(() => {
     const el = root.current;
     if (!el) return;
-    const mm = gsap.matchMedia();
-    mm.add("(min-width: 821px)", () => {
+    // Pinned horizontal reel at every width (phones included)
+    const ctx = gsap.context(() => {
       const track = el.querySelector<HTMLElement>(".work-track")!;
       const distance = () => track.scrollWidth - window.innerWidth;
       const tween = gsap.to(track, {
@@ -99,6 +99,7 @@ const Work: React.FC = () => {
           start: "top top",
           end: () => `+=${distance()}`,
           pin: true,
+          anticipatePin: 1,
           scrub: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
@@ -119,13 +120,8 @@ const Work: React.FC = () => {
           }
         );
       });
-    });
-    mm.add("(max-width: 820px)", () => {
-      gsap.utils.toArray<HTMLElement>(".wcard").forEach((c) => {
-        gsap.from(c, { y: 80, opacity: 0, duration: 1.1, ease: "expo.out", scrollTrigger: { trigger: c, start: "top 90%" } });
-      });
-    });
-    return () => mm.revert();
+    }, el);
+    return () => ctx.revert();
   }, []);
 
   return (
