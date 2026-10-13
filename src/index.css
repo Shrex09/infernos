@@ -1933,6 +1933,22 @@ html.has-cursor * {
   background: linear-gradient(to bottom, transparent 45%, rgba(10, 6, 5, 0.92) 100%);
 }
 
+/* Deeper shade that fades in under the expanded details, leaving the face clear */
+.player-photo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(to bottom, transparent 30%, rgba(10, 6, 5, 0.7) 55%, rgba(10, 6, 5, 0.96) 100%);
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.player:hover .player-photo::before,
+.player.is-open .player-photo::before {
+  opacity: 1;
+}
+
 .player-holo {
   position: absolute;
   inset: 0;
@@ -1951,6 +1967,7 @@ html.has-cursor * {
 
 .player-slot {
   position: absolute;
+  z-index: 2;
   top: 14px;
   left: 14px;
   padding: 4px 10px;
@@ -1965,12 +1982,12 @@ html.has-cursor * {
 
 .player-base {
   position: absolute;
+  z-index: 2;
   left: 18px;
   right: 18px;
   bottom: 16px;
   display: flex;
   flex-direction: column;
-  transition: opacity 0.4s, transform 0.6s var(--ease-out);
 }
 
 .player-name {
@@ -1989,33 +2006,31 @@ html.has-cursor * {
   letter-spacing: 0.04em;
 }
 
+/* 0fr -> 1fr grid row: animates to the content's natural height */
 .player-detail {
-  position: absolute;
-  inset: 0;
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.6s var(--ease-out), opacity 0.4s;
+  color: var(--ink);
+}
+
+.player-detail-inner {
+  min-height: 0;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  gap: 16px;
-  padding: 22px 18px 18px;
-  background: linear-gradient(to bottom, rgba(10, 6, 5, 0.25), rgba(10, 6, 5, 0.95) 38%);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  opacity: 0;
-  transform: translateY(14%);
-  transition: opacity 0.45s, transform 0.7s var(--ease-out);
-  color: var(--ink);
+  gap: 12px;
+}
+
+.player-detail-inner > :first-child {
+  margin-top: 12px;
 }
 
 .player:hover .player-detail,
 .player.is-open .player-detail {
+  grid-template-rows: 1fr;
   opacity: 1;
-  transform: none;
-}
-
-.player:hover .player-base,
-.player.is-open .player-base {
-  opacity: 0;
-  transform: translateY(10px);
 }
 
 .player-detail p {
@@ -2847,8 +2862,10 @@ html.has-cursor * {
     display: none;
   }
 
-  .player-detail {
-    padding: 14px 12px;
+  .player-base {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
   }
 
   .pstat {

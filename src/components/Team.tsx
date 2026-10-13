@@ -3,6 +3,9 @@ import { gsap, isTouch } from "../lib/motion";
 import { team, dailyShuffle, Member } from "../data";
 import { Eyebrow } from "./ui";
 
+/** Amit's id in data.ts */
+const LEAD_ID = "p2";
+
 const PlayerCard: React.FC<{ m: Member; slot: number }> = ({ m, slot }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -55,19 +58,22 @@ const PlayerCard: React.FC<{ m: Member; slot: number }> = ({ m, slot }) => {
         <div className="player-base">
           <span className="player-name">{m.name}</span>
           <span className="player-role">{m.role}</span>
-        </div>
-        <div className="player-detail">
-          <p>{m.bio}</p>
-          <div className="player-stats">
-            {m.stats.map((s) => (
-              <div className="pstat" key={s.label}>
-                <span className="pstat-label">{s.label}</span>
-                <span className="pstat-bar">
-                  <span style={{ width: `${s.value}%` }} />
-                </span>
-                <span className="pstat-val">{s.value}</span>
+          {/* Expands under the name on hover/tap; the photo stays visible above it */}
+          <div className="player-detail">
+            <div className="player-detail-inner">
+              <p>{m.bio}</p>
+              <div className="player-stats">
+                {m.stats.map((s) => (
+                  <div className="pstat" key={s.label}>
+                    <span className="pstat-label">{s.label}</span>
+                    <span className="pstat-bar">
+                      <span style={{ width: `${s.value}%` }} />
+                    </span>
+                    <span className="pstat-val">{s.value}</span>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </div>
@@ -77,7 +83,11 @@ const PlayerCard: React.FC<{ m: Member; slot: number }> = ({ m, slot }) => {
 
 const Team: React.FC = () => {
   const root = useRef<HTMLElement>(null);
-  const roster = useMemo(() => dailyShuffle(team), []);
+  // Amit always leads as P1; everyone else reshuffles once a day
+  const roster = useMemo(() => {
+    const lead = team.filter((m) => m.id === LEAD_ID);
+    return [...lead, ...dailyShuffle(team.filter((m) => m.id !== LEAD_ID))];
+  }, []);
 
   useEffect(() => {
     const el = root.current;
@@ -107,8 +117,8 @@ const Team: React.FC = () => {
             </h2>
           </div>
           <p className="lead" data-reveal>
-            Seven builders, one squad. Hover or tap a card to see their stats — the line-up reshuffles every day, so
-            nobody fights over P1.
+            Seven builders, one squad. Hover or tap a card to see their stats — the line-up behind P1 reshuffles
+            every day.
           </p>
         </div>
         <div className="team-grid">
