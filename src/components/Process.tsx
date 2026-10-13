@@ -23,7 +23,16 @@ const Process: React.FC = () => {
             rotateX: 8,
             filter: "brightness(0.45)",
             ease: "none",
-            scrollTrigger: { trigger: cards[i + 1], start: "top bottom", end: "top 18%", scrub: true },
+            scrollTrigger: {
+              trigger: cards[i + 1],
+              // Recede only once the next card actually starts to cover this one (it reaches this
+              // card's bottom edge), not as soon as it appears; on phones the cards are short, so
+              // the old "top bottom" start dimmed the card you were still reading
+              start: () => `top ${parseFloat(getComputedStyle(card).top) + card.offsetHeight}px`,
+              end: "top 18%",
+              scrub: true,
+              invalidateOnRefresh: true,
+            },
           }
         );
       });
