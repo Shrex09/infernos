@@ -57,6 +57,11 @@ export const scrollToId = (id: string) => {
   else el.scrollIntoView({ behavior: "smooth" });
 };
 
+export const scrollToY = (y: number, duration = 0.9) => {
+  if (lenis) lenis.scrollTo(y, { duration });
+  else window.scrollTo({ top: y, behavior: "smooth" });
+};
+
 export const scrollToTop = () => {
   if (lenis) lenis.scrollTo(0, { duration: 1.8 });
   else window.scrollTo({ top: 0, behavior: "smooth" });

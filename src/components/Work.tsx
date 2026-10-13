@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { gsap, isTouch, scrollToId } from "../lib/motion";
+import { gsap, isTouch, scrollToId, scrollToY } from "../lib/motion";
 import { projects, Project } from "../data";
 import { Eyebrow } from "./ui";
 
@@ -87,11 +87,14 @@ const Work: React.FC = () => {
   useEffect(() => {
     const el = root.current;
     if (!el) return;
+    const track = el.querySelector<HTMLElement>(".work-track")!;
+    const pin = el.querySelector<HTMLElement>(".work-pin")!;
+    const distance = () => track.scrollWidth - window.innerWidth;
+    let tween: gsap.core.Tween | undefined;
+
     // Pinned horizontal reel at every width (phones included)
     const ctx = gsap.context(() => {
-      const track = el.querySelector<HTMLElement>(".work-track")!;
-      const distance = () => track.scrollWidth - window.innerWidth;
-      const tween = gsap.to(track, {
+      tween = gsap.to(track, {
         x: () => -distance(),
         ease: "none",
         scrollTrigger: {
@@ -121,7 +124,24 @@ const Work: React.FC = () => {
         );
       });
     }, el);
-    return () => ctx.revert();
+
+    // Keyboard: the track only moves with vertical scroll, so tabbing to an
+    // off-screen card scrolls the page to the point in the pin that shows it
+    const onFocus = (e: FocusEvent) => {
+      const item = (e.target as HTMLElement).closest<HTMLElement>(".wcard, .work-end");
+      const st = tween?.scrollTrigger;
+      pin.scrollLeft = 0; // the browser may try to scroll the overflow:hidden pin itself
+      if (!item || !st) return;
+      const gutter = parseFloat(getComputedStyle(track).paddingLeft) || 0;
+      const progress = gsap.utils.clamp(0, 1, (item.offsetLeft - gutter) / distance());
+      scrollToY(st.start + progress * (st.end - st.start));
+    };
+    track.addEventListener("focusin", onFocus);
+
+    return () => {
+      track.removeEventListener("focusin", onFocus);
+      ctx.revert();
+    };
   }, []);
 
   return (
