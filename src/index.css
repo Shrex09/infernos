@@ -1149,10 +1149,11 @@ html.has-cursor * {
   top: 0;
   left: -15%;
   width: 130%;
+  max-width: none; /* the global img/video reset would cap this at 100% and expose an edge */
   height: 100%;
   object-fit: cover;
   transform: scale(1.02);
-  transition: transform 1.2s var(--ease-out), filter 0.6s;
+  transition: filter 0.6s; /* transform is scrubbed by GSAP — a CSS transition would lag it */
   filter: saturate(0.85) brightness(0.9);
 }
 
