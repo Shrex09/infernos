@@ -271,31 +271,29 @@ html.has-cursor * {
   gap: 12px;
 }
 
+/* .rb-text is the fixed window; only the inner roll moves, so the clip stays put
+   and the duplicate label slides up into exactly the same spot */
 .rb-text {
-  position: relative;
   display: inline-block;
   overflow: hidden;
   line-height: 1.3;
 }
 
-.rb-text::after {
+.rb-roll {
+  position: relative;
+  display: block;
+  transition: transform 0.55s var(--ease-out);
+}
+
+.rb-roll::after {
   content: attr(data-text);
   position: absolute;
   left: 0;
   top: 100%;
 }
 
-.rb-text,
-.rb-text::after {
-  transition: transform 0.55s var(--ease-out);
-}
-
-.roll-btn:hover .rb-text {
+.roll-btn:hover .rb-roll {
   transform: translateY(-100%);
-}
-
-.rb-text {
-  clip-path: inset(0);
 }
 
 .rb-arrow {

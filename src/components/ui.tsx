@@ -67,8 +67,10 @@ export const RollButton: React.FC<{
     <>
       <span className="rb-fill" />
       <span className="rb-label">
-        <span className="rb-text" data-text={children}>
-          {children}
+        <span className="rb-text">
+          <span className="rb-roll" data-text={children}>
+            {children}
+          </span>
         </span>
         {arrow && (
           <span className="rb-arrow" aria-hidden="true">
