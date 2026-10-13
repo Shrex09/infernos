@@ -1073,8 +1073,8 @@ html.has-cursor * {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: clamp(28px, 4vh, 48px);
-  padding: 90px 0 40px;
+  gap: clamp(20px, 3.5vh, 48px);
+  padding: clamp(76px, 11vh, 90px) 0 clamp(20px, 4vh, 40px);
   overflow: hidden;
 }
 
@@ -1086,7 +1086,7 @@ html.has-cursor * {
 }
 
 .work-head .display-lg {
-  font-size: clamp(2.3rem, 5vw, 4.8rem);
+  font-size: clamp(2.3rem, min(5vw, 8.5vh), 4.8rem);
 }
 
 .work-counter {
@@ -1123,7 +1123,9 @@ html.has-cursor * {
   display: flex;
   flex-direction: column;
   gap: 18px;
-  width: clamp(320px, 46vw, 760px);
+  /* Bounded by height as well as width: on wide-but-short windows a 46vw card
+     pushed its title below the fold (media is 16:10, the rest of the pin ~470px) */
+  width: clamp(320px, min(46vw, (100vh - 470px) * 1.6), 760px);
   flex-shrink: 0;
   perspective: 1400px;
 }
