@@ -78,9 +78,6 @@ const Hero: React.FC = () => {
   return (
     <section ref={root} className="hero" data-orb="0.48 0.04 1.05 1" data-orb-mobile="0.05 0.42 0.95 1" aria-label="Introduction">
       <div className="hero-top hero-fade">
-        <span className="hero-chip">
-          <span className="live-dot" /> Available for new projects
-        </span>
         <span className="hero-meta">IT Solutions — Sangli, IN</span>
       </div>
 

@@ -778,24 +778,10 @@ html.has-cursor * {
 
 .hero-top {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
-}
-
-.hero-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 16px 8px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: rgba(14, 10, 9, 0.45);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  font-size: 13px;
-  font-weight: 500;
 }
 
 .hero-meta {
@@ -842,6 +828,9 @@ html.has-cursor * {
   position: relative;
   display: inline-grid;
   vertical-align: bottom;
+  /* The word often sits on the core (always on phones): a dark halo keeps the
+     orange gradient from blending into the orange surface */
+  filter: drop-shadow(0 0 6px rgba(7, 5, 5, 0.95)) drop-shadow(0 0 16px rgba(7, 5, 5, 0.75));
 }
 
 .roll-word-sizer {
