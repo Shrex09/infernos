@@ -822,6 +822,9 @@ html.has-cursor * {
 }
 
 .hero-title .serif-accent {
+  /* Each roll item paints its own gradient; a background-clipped parent would
+     show every hidden word's glyphs at once */
+  background: none;
   font-weight: 400;
   font-size: 1.04em;
   letter-spacing: -0.03em;
@@ -2622,8 +2625,10 @@ html.has-cursor * {
     white-space: normal;
   }
 
-  .hero-title .roll-word {
-    display: grid;
+  /* Block on the em itself: a block grid inside the inline em would split it and
+     leave an empty padded line box below the word */
+  .hero-title .serif-accent {
+    display: block;
   }
 
   .hero-bottom {
