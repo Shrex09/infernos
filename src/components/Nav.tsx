@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { gsap, lockScroll, onScroll, scrollToId, scrollToTop } from "../lib/motion";
 import { navLinks, CONTACT } from "../data";
 import { LogoMark, RollButton } from "./ui";
+import { useFocusTrap } from "../lib/focus";
 
 const useLocalTime = () => {
   const fmt = () =>
@@ -19,6 +20,7 @@ const Nav: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const burgerRef = useRef<HTMLButtonElement>(null);
   const tl = useRef<gsap.core.Timeline | null>(null);
   const time = useLocalTime();
 
@@ -67,6 +69,13 @@ const Nav: React.FC = () => {
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
+  // Keyboard users stay inside the open menu (burger + links) and land back on the burger
+  useFocusTrap(
+    open,
+    () => [burgerRef.current, menuRef.current],
+    () => menuRef.current?.querySelector<HTMLElement>(".menu-link") ?? null
+  );
+
   const go = (id: string) => {
     setOpen(false);
     window.setTimeout(() => scrollToId(id), open ? 450 : 0);
@@ -96,6 +105,7 @@ const Nav: React.FC = () => {
             Let's talk
           </RollButton>
           <button
+            ref={burgerRef}
             className={`burger ${open ? "burger--open" : ""}`}
             onClick={() => setOpen((o) => !o)}
             aria-label={open ? "Close menu" : "Open menu"}

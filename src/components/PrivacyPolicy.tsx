@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { lockScroll } from "../lib/motion";
 import { CONTACT } from "../data";
+import { useFocusTrap } from "../lib/focus";
 
 interface Props {
   open: boolean;
@@ -11,6 +12,10 @@ interface Props {
 const LAST_UPDATED = "13 October 2026";
 
 const PrivacyPolicy: React.FC<Props> = ({ open, onClose }) => {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  // Focus starts on Close, Tab stays in the dialog, and returns to the Privacy Policy link afterwards
+  useFocusTrap(open, () => [dialogRef.current], () => dialogRef.current?.querySelector<HTMLElement>(".modal-close") ?? null);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -29,6 +34,7 @@ const PrivacyPolicy: React.FC<Props> = ({ open, onClose }) => {
   return createPortal(
     <div className="modal-overlay" onClick={onClose} role="presentation">
       <div
+        ref={dialogRef}
         className="modal"
         role="dialog"
         aria-modal="true"
