@@ -97,10 +97,18 @@ export const RollButton: React.FC<{
 };
 
 /** Small mono label with a pulsing ember dot, used above section headings. */
-export const Eyebrow: React.FC<{ children: React.ReactNode; index?: string }> = ({ children, index }) => (
-  <div className="eyebrow" data-reveal>
-    {index && <span className="eyebrow-index">{index}</span>}
+export const Eyebrow: React.FC<{ children: React.ReactNode; index?: string; as?: "div" | "h2" }> = ({
+  children,
+  index,
+  as: Tag = "div",
+}) => (
+  <Tag className="eyebrow" data-reveal>
+    {index && (
+      <span className="eyebrow-index" aria-hidden="true">
+        {index}
+      </span>
+    )}
     <span className="eyebrow-dot" />
     <span>{children}</span>
-  </div>
+  </Tag>
 );

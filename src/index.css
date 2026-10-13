@@ -155,6 +155,7 @@ html.has-cursor * {
   gap: 10px;
   font-family: var(--font-mono);
   font-size: 12px;
+  font-weight: 400; /* also rendered as an h2 */
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
