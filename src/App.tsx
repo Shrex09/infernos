@@ -45,7 +45,8 @@ const App: React.FC = () => {
   useEffect(() => {
     if (!ready) return;
     ScrollTrigger.refresh();
-    document.fonts?.ready.then(() => ScrollTrigger.refresh());
+    // Refresh is a long task — only repeat it if fonts are genuinely still swapping in
+    if (document.fonts && document.fonts.status !== "loaded") document.fonts.ready.then(() => ScrollTrigger.refresh());
     const onLoad = () => ScrollTrigger.refresh();
     window.addEventListener("load", onLoad);
     return () => window.removeEventListener("load", onLoad);
