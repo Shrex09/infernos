@@ -41,8 +41,14 @@ const Nav: React.FC = () => {
         .timeline({ paused: true })
         .set(el, { visibility: "visible" })
         .fromTo(el, { clipPath: "circle(0% at 100% 0%)" }, { clipPath: "circle(150% at 100% 0%)", duration: 0.9, ease: "expo.inOut" })
-        .from(".menu-link-inner", { yPercent: 120, rotate: 4, duration: 0.9, stagger: 0.06, ease: "expo.out" }, "-=0.45")
-        .from(".menu-foot > *", { opacity: 0, y: 20, duration: 0.6, stagger: 0.05, ease: "power3.out" }, "-=0.7");
+        // Explicit end values so the links always land at rest, whatever is read from the DOM
+        .fromTo(
+          ".menu-link-inner",
+          { yPercent: 120, y: 0, rotate: 4 },
+          { yPercent: 0, y: 0, rotate: 0, duration: 0.9, stagger: 0.06, ease: "expo.out" },
+          "-=0.45"
+        )
+        .fromTo(".menu-foot > *", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.05, ease: "power3.out" }, "-=0.7");
     }, el);
     return () => ctx.revert();
   }, []);

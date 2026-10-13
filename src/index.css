@@ -703,18 +703,24 @@ html.has-cursor * {
   font-size: clamp(2.8rem, 13vw, 7rem);
   line-height: 1.02;
   letter-spacing: -0.04em;
+  transition: transform 0.5s var(--ease-out);
+}
+
+/* The hover nudge lives on the button: GSAP owns the inner's transform for the
+   entrance, and a CSS transform transition there corrupts its start values */
+.menu-link:hover {
+  transform: translateX(16px);
 }
 
 .menu-link-inner {
   display: inline-flex;
   align-items: flex-start;
   gap: 14px;
-  transition: color 0.3s, transform 0.5s var(--ease-out);
+  transition: color 0.3s;
 }
 
 .menu-link:hover .menu-link-inner {
   color: var(--ember-2);
-  transform: translateX(16px);
 }
 
 .menu-index {
