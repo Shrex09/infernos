@@ -101,6 +101,10 @@ html.has-cursor * {
 .page {
   position: relative;
   z-index: 1;
+  /* The tilted marquee's corners poke past the edges; body overflow-x alone
+     doesn't stop mobile browsers widening the layout viewport. clip (not hidden)
+     keeps sticky and pinned children working. */
+  overflow-x: clip;
 }
 
 .container {
