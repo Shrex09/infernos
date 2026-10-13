@@ -129,7 +129,7 @@ const Work: React.FC = () => {
   }, []);
 
   return (
-    <section id="work" ref={root} className="work" data-orb="0.78 -0.72 0.42 0.35" data-orb-mobile="-0.8 0.75 0.35 0.3">
+    <section id="work" ref={root} className="work" data-orb="-1.02 -0.05 0.55 0.45" data-orb-mobile="-1.15 0.55 0.35 0.3">
       <div className="work-pin">
         <div className="container work-head">
           <div>

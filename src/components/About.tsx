@@ -45,7 +45,7 @@ const About: React.FC = () => {
   }, []);
 
   return (
-    <section id="about" ref={root} className="section about" data-orb="0.74 -0.2 0.6 0.55" data-orb-mobile="0.7 -0.6 0.45 0.4">
+    <section id="about" ref={root} className="section about" data-orb="0.74 -0.2 0.6 0.55" data-orb-mobile="1.15 -0.75 0.4 0.35">
       <div className="container">
         <Eyebrow index="(01)">Who we are</Eyebrow>
         <p className="manifesto">

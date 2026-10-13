@@ -174,7 +174,8 @@ const Contact: React.FC = () => {
           </h2>
         </div>
 
-        <div className="contact-grid">
+        {/* Own pose: once the form scrolls up, the core moves out from behind the fields */}
+        <div className="contact-grid" data-orb="-1.2 -0.7 0.6 0.5" data-orb-mobile="1.15 -0.85 0.35 0.35">
           <div className="contact-info">
             <p className="lead">
               Tell us about your project. We reply with an honest assessment — scope, timeline and cost — not a sales

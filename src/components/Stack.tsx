@@ -111,7 +111,7 @@ const TechSphere: React.FC = () => {
 };
 
 const Stack: React.FC = () => (
-  <section id="stack" className="section stack" data-orb="0.85 0.75 0.3 0.3" data-orb-mobile="-0.9 -0.8 0.3 0.25">
+  <section id="stack" className="section stack" data-orb="0.5 0 0.4 0.5" data-orb-mobile="-0.9 -0.8 0.3 0.25">
     <div className="container stack-grid">
       <div className="stack-copy">
         <Eyebrow index="(04)">Arsenal</Eyebrow>

@@ -97,7 +97,7 @@ const Team: React.FC = () => {
   }, []);
 
   return (
-    <section id="team" ref={root} className="section team" data-orb="-0.9 0.85 0.32 0.3" data-orb-mobile="0.9 0.9 0.25 0.25">
+    <section id="team" ref={root} className="section team" data-orb="1.02 -0.55 0.45 0.35" data-orb-mobile="0.9 0.9 0.25 0.25">
       <div className="container">
         <div className="team-head">
           <div>

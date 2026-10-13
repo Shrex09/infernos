@@ -39,7 +39,7 @@ const Testimonials: React.FC = () => {
     <section
       ref={root}
       className="section testimonials"
-      data-orb="0.75 0.15 0.55 0.5"
+      data-orb="1.08 0.1 0.6 0.5"
       data-orb-mobile="0.8 -0.8 0.35 0.3"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}

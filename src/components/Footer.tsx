@@ -22,7 +22,7 @@ const Footer: React.FC = () => {
   }, []);
 
   return (
-    <footer ref={root} className="footer" data-orb="0 -1.32 1.5 0.9" data-orb-mobile="0 -1.15 1.5 0.9">
+    <footer ref={root} className="footer" data-orb="0 -1.18 1.5 0.9" data-orb-mobile="0 -0.95 1.5 0.9">
       <div className="container">
         <div className="footer-top">
           <div className="footer-brand">

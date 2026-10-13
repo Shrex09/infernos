@@ -25,7 +25,7 @@ const Services: React.FC = () => {
   }, []);
 
   return (
-    <section id="services" ref={root} className="section services" data-orb="-0.72 0.3 0.55 0.5" data-orb-mobile="0.75 0.8 0.35 0.3">
+    <section id="services" ref={root} className="section services" data-orb="0.6 0.05 0.5 0.4" data-orb-mobile="-1.15 -0.7 0.35 0.3">
       <div className="container">
         <div className="svc-head">
           <Eyebrow index="(03)">Capabilities</Eyebrow>

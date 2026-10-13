@@ -34,7 +34,7 @@ const Stats: React.FC = () => {
   }, []);
 
   return (
-    <section ref={root} className="section stats" data-orb="0 0 1.25 1" data-orb-mobile="0 0 1.3 0.9" aria-label="Studio in numbers">
+    <section ref={root} className="section stats" data-orb="0 0 1.1 1" data-orb-mobile="0 0 1.3 0.9" aria-label="Studio in numbers">
       <div className="container">
         <p className="stats-kicker" data-reveal>
           Small team. <em className="serif-accent">Serious output.</em>
