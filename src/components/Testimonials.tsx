@@ -1,197 +1,96 @@
-import React from "react";
-import { useReveal, revealStyle } from "../hooks";
+import React, { useEffect, useRef, useState } from "react";
+import { gsap, prefersReducedMotion } from "../lib/motion";
+import { testimonials } from "../data";
+import { Eyebrow } from "./ui";
 
-interface Testimonial {
-  quote: string;
-  name: string;
-  role: string;
-  company: string;
-  logo: string;
-  result: string;
-}
-
-const testimonials: Testimonial[] = [
-  {
-    quote: "The e-commerce platform for our nursery has transformed our business. Online sales have increased by 300% since launch. The team understood our needs perfectly.",
-    name: "Mayur Koli",
-    role: "Owner",
-    company: "Mayur Nursery",
-    logo: "/mayur.png",
-    result: "+300% online sales",
-  },
-  {
-    quote: "The barcode scanning solution has streamlined our inventory management completely. The integration with our existing systems was flawless. Excellent technical skills and support.",
-    name: "Sarah Kumar",
-    role: "IT Director",
-    company: "MGTech Systems",
-    logo: "/mg_logo.png",
-    result: "Flawless system integration",
-  },
-  {
-    quote: "A modern healthcare platform that redefines convenience by bringing appointments, records, and care into one intelligent system.",
-    name: "Dr. Akshay B. Pawar",
-    role: "Owner, Doctor",
-    company: "MediCore",
-    logo: "/medicore.png",
-    result: "Unified patient platform",
-  },
-];
-
-const Stars: React.FC = () => (
-  <div style={{ display: "flex", gap: 4 }}>
-    {[0, 1, 2, 3, 4].map((i) => (
-      <span key={i} style={{ color: "#ffa53c", fontSize: 15, textShadow: "0 0 8px rgba(255,165,60,0.6)" }}>★</span>
-    ))}
-  </div>
-);
+const DURATION = 8;
 
 const Testimonials: React.FC = () => {
-  const head = useReveal();
-  const grid = useReveal();
+  const root = useRef<HTMLElement>(null);
+  const quoteRef = useRef<HTMLDivElement>(null);
+  const [i, setI] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const t = testimonials[i];
+
+  // Auto-advance, with the active tab's bar acting as the timer
+  useEffect(() => {
+    if (paused || prefersReducedMotion()) return;
+    const bar = root.current?.querySelector<HTMLElement>(`.tq-tab[data-i="${i}"] .tq-tab-fill`);
+    if (!bar) return;
+    const tw = gsap.fromTo(bar, { scaleX: 0 }, { scaleX: 1, duration: DURATION, ease: "none", onComplete: () => setI((n) => (n + 1) % testimonials.length) });
+    return () => {
+      tw.kill();
+      gsap.set(bar, { scaleX: 0 });
+    };
+  }, [i, paused]);
+
+  // Words rise in whenever the quote changes
+  useEffect(() => {
+    const el = quoteRef.current;
+    if (!el) return;
+    const ctx = gsap.context(() => {
+      gsap.from(".tq-word", { yPercent: 100, opacity: 0, duration: 0.9, stagger: 0.012, ease: "expo.out" });
+      gsap.from(".tq-person > *", { y: 16, opacity: 0, duration: 0.7, stagger: 0.06, ease: "power3.out", delay: 0.2 });
+    }, el);
+    return () => ctx.revert();
+  }, [i]);
 
   return (
-    <section id="testimonials" className="section" style={styles.section}>
-      <div className="section-inner">
-        <div ref={head.ref} style={{ ...styles.header, ...revealStyle(head.visible) }}>
-          <span className="kicker">Client voices</span>
-          <h2 className="section-heading">
-            What our clients <span className="text-gradient">say</span>
-          </h2>
-          <p className="section-sub">
-            Every quote below comes from a client whose product is linked in
-            the work section above.
-          </p>
+    <section
+      ref={root}
+      className="section testimonials"
+      data-orb="0.75 0.15 0.55 0.5"
+      data-orb-mobile="0.8 -0.8 0.35 0.3"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div className="container">
+        <Eyebrow index="(06)">Client voices</Eyebrow>
+
+        <div className="tq" ref={quoteRef} key={i}>
+          <span className="tq-mark" aria-hidden="true">“</span>
+          <blockquote className="tq-quote">
+            {t.quote.split(" ").map((w, n) => (
+              <React.Fragment key={n}>
+                <span className="sw-mask">
+                  <span className="tq-word">{w}</span>
+                </span>{" "}
+              </React.Fragment>
+            ))}
+          </blockquote>
+          <div className="tq-person">
+            <img src={t.logo} alt="" className="tq-logo" loading="lazy" />
+            <div>
+              <span className="tq-name">{t.name}</span>
+              <span className="tq-role">
+                {t.role} · {t.company}
+              </span>
+            </div>
+            <span className="tq-result">{t.result}</span>
+          </div>
         </div>
 
-        <div ref={grid.ref} style={styles.row}>
-          {testimonials.map((t, i) => (
-            <div
-              key={t.company}
-              className="glass hover-glow"
-              style={{ ...styles.card, ...revealStyle(grid.visible, i * 120) }}
+        <div className="tq-tabs" role="tablist" aria-label="Choose testimonial">
+          {testimonials.map((x, n) => (
+            <button
+              key={x.company}
+              role="tab"
+              aria-selected={n === i}
+              className={`tq-tab ${n === i ? "is-active" : ""}`}
+              data-i={n}
+              onClick={() => setI(n)}
             >
-              <div style={styles.cardTop}>
-                <Stars />
-                <span style={styles.verified}>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 6L9 17l-5-5" />
-                  </svg>
-                  Verified client
-                </span>
-              </div>
-
-              <p style={styles.quote}>"{t.quote}"</p>
-
-              <div style={styles.resultChip}>{t.result}</div>
-
-              <div style={styles.divider} />
-
-              <div style={styles.person}>
-                <img src={t.logo} alt={t.company} style={styles.avatarImg} />
-                <div style={styles.personInfo}>
-                  <span style={styles.name}>{t.name}</span>
-                  <span style={styles.role}>{t.role} · {t.company}</span>
-                </div>
-              </div>
-            </div>
+              <span className="tq-tab-num">0{n + 1}</span>
+              <span className="tq-tab-name">{x.company}</span>
+              <span className="tq-tab-bar">
+                <span className="tq-tab-fill" />
+              </span>
+            </button>
           ))}
         </div>
       </div>
     </section>
   );
-};
-
-const styles: Record<string, React.CSSProperties> = {
-  section: {
-    background: "var(--bg-2)",
-  },
-  header: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 18,
-    marginBottom: 56,
-  },
-  row: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(290px, 1fr))",
-    gap: 24,
-  },
-  card: {
-    padding: 30,
-    display: "flex",
-    flexDirection: "column",
-    gap: 18,
-  },
-  cardTop: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: 10,
-    flexWrap: "wrap",
-  },
-  verified: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 6,
-    fontFamily: "var(--font-mono)",
-    fontSize: 11,
-    fontWeight: 600,
-    color: "var(--accent-text)",
-    background: "rgba(255, 106, 43, 0.08)",
-    border: "1px solid rgba(255, 106, 43, 0.3)",
-    borderRadius: 999,
-    padding: "4px 11px",
-    letterSpacing: "0.05em",
-  },
-  quote: {
-    fontSize: 15.5,
-    lineHeight: 1.7,
-    color: "var(--muted)",
-    flex: 1,
-  },
-  resultChip: {
-    alignSelf: "flex-start",
-    fontFamily: "var(--font-mono)",
-    fontSize: 12.5,
-    fontWeight: 600,
-    color: "var(--accent-text)",
-    background: "rgba(255, 105, 35, 0.1)",
-    border: "1px solid rgba(255, 130, 55, 0.3)",
-    borderRadius: 8,
-    padding: "6px 12px",
-  },
-  divider: {
-    height: 1,
-    background: "linear-gradient(90deg, rgba(255,130,55,0.3), transparent)",
-  },
-  person: {
-    display: "flex",
-    alignItems: "center",
-    gap: 14,
-  },
-  avatarImg: {
-    width: 48,
-    height: 48,
-    borderRadius: "50%",
-    objectFit: "cover",
-    background: "var(--bg-2)",
-    padding: 3,
-    border: "1px solid rgba(255, 130, 55, 0.3)",
-  },
-  personInfo: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 2,
-  },
-  name: {
-    fontWeight: 600,
-    fontSize: 15.5,
-    color: "var(--text)",
-  },
-  role: {
-    fontSize: 13.5,
-    color: "var(--faint)",
-  },
 };
 
 export default Testimonials;
