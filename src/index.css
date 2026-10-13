@@ -1696,7 +1696,8 @@ html.has-cursor * {
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* minmax(0, ...): equal tiles even when a number is wide */
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
 }
 
@@ -1710,12 +1711,15 @@ html.has-cursor * {
   background: rgba(10, 6, 5, 0.38);
   backdrop-filter: blur(22px) saturate(1.3);
   -webkit-backdrop-filter: blur(22px) saturate(1.3);
+  container-type: inline-size;
 }
 
 .stat-value {
   font-family: var(--font-display);
   font-weight: 800;
   font-size: clamp(3.2rem, 7vw, 6.4rem);
+  /* Sized to the tile, not the viewport, so "96%" always fits its card */
+  font-size: clamp(2.2rem, 27cqi, 6.4rem);
   line-height: 1;
   letter-spacing: -0.06em;
   font-variant-numeric: tabular-nums;
@@ -2598,7 +2602,7 @@ html.has-cursor * {
   }
 
   .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -2815,10 +2819,6 @@ html.has-cursor * {
 
   .stat {
     padding: 20px 18px;
-  }
-
-  .stat-value {
-    font-size: clamp(2.6rem, 13vw, 4rem);
   }
 
   .stat-note {
