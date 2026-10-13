@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { gsap, ScrollTrigger, useSiteReady } from "./lib/motion";
+import { gsap, ScrollTrigger, useSiteReady, prefersReducedMotion } from "./lib/motion";
 import Preloader from "./components/Preloader";
 import Cursor from "./components/Cursor";
 import CoreCanvas from "./components/CoreCanvas";
@@ -23,6 +23,7 @@ const App: React.FC = () => {
 
   // Generic scroll reveals for anything tagged data-reveal / data-split
   useEffect(() => {
+    if (prefersReducedMotion()) return; // content is simply there
     const ctx = gsap.context(() => {
       gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((el) => {
         gsap.from(el, { y: 40, opacity: 0, duration: 1.1, ease: "expo.out", scrollTrigger: { trigger: el, start: "top 90%" } });

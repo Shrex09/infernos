@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { gsap, scrollToId, useSiteReady, isTouch } from "../lib/motion";
+import { gsap, scrollToId, useSiteReady, isTouch, prefersReducedMotion } from "../lib/motion";
 import { RollButton } from "./ui";
 
 const WORDS = ["products", "platforms", "mobile apps", "storefronts", "experiences"];
@@ -33,7 +33,7 @@ const Hero: React.FC = () => {
   // Intro choreography once the preloader lifts
   useEffect(() => {
     const el = root.current;
-    if (!el) return;
+    if (!el || prefersReducedMotion()) return; // headline just shows, no rise or scroll drift
     const ctx = gsap.context(() => {
       gsap.set(".hero-line-inner", { yPercent: 115, rotate: 3 });
       gsap.set(".hero-fade", { opacity: 0, y: 24 });
@@ -57,7 +57,7 @@ const Hero: React.FC = () => {
   // Subtle pointer parallax on the headline lines
   useEffect(() => {
     const el = root.current;
-    if (!el || isTouch()) return;
+    if (!el || isTouch() || prefersReducedMotion()) return;
     const lines = Array.from(el.querySelectorAll<HTMLElement>(".hero-line"));
     const setters = lines.map((l) => ({
       x: gsap.quickTo(l, "x", { duration: 1.2, ease: "power3" }),
@@ -87,7 +87,7 @@ const Hero: React.FC = () => {
         </span>
         <span className="hero-line">
           <span className="hero-line-inner">
-            digital <em className="serif-accent"><RollingWord active={ready} /></em>
+            digital <em className="serif-accent"><RollingWord active={ready && !prefersReducedMotion()} /></em>
           </span>
         </span>
         <span className="hero-line">
