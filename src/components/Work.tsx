@@ -1,190 +1,126 @@
-import React, { useEffect, useRef, useState } from "react";
-import { gsap, isTouch, scrollToId, scrollToY } from "../lib/motion";
+import React, { useEffect, useRef } from "react";
+import { gsap, prefersReducedMotion, scrollToId } from "../lib/motion";
 import { projects, Project } from "../data";
 import { Eyebrow } from "./ui";
 
-const WorkCard: React.FC<{ project: Project; index: number }> = ({ project, index }) => {
-  const card = useRef<HTMLAnchorElement>(null);
-  const video = useRef<HTMLVideoElement>(null);
-
-  // Play only while on screen — ten autoplaying videos would melt a phone
-  useEffect(() => {
-    const el = card.current;
-    const v = video.current;
-    if (!el || !v) return;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) v.play().catch(() => {});
-        else v.pause();
-      },
-      { threshold: 0.2 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
-  // 3D tilt toward the pointer
-  useEffect(() => {
-    const el = card.current;
-    if (!el || isTouch()) return;
-    const media = el.querySelector<HTMLElement>(".wcard-media");
-    if (!media) return;
-    const rx = gsap.quickTo(media, "rotateX", { duration: 0.8, ease: "power3" });
-    const ry = gsap.quickTo(media, "rotateY", { duration: 0.8, ease: "power3" });
-    const move = (e: PointerEvent) => {
-      const r = media.getBoundingClientRect();
-      ry(((e.clientX - r.left) / r.width - 0.5) * 10);
-      rx(-((e.clientY - r.top) / r.height - 0.5) * 8);
-      media.style.setProperty("--mx", `${((e.clientX - r.left) / r.width) * 100}%`);
-      media.style.setProperty("--my", `${((e.clientY - r.top) / r.height) * 100}%`);
-    };
-    const leave = () => {
-      rx(0);
-      ry(0);
-    };
-    el.addEventListener("pointermove", move);
-    el.addEventListener("pointerleave", leave);
-    return () => {
-      el.removeEventListener("pointermove", move);
-      el.removeEventListener("pointerleave", leave);
-    };
-  }, []);
-
-  return (
+const ProjectCard: React.FC<{ project: Project; index: number }> = ({ project, index }) => (
+  <li className="proj-item">
     <a
-      ref={card}
-      className="wcard"
+      className="proj"
       href={project.link}
       target="_blank"
       rel="noopener noreferrer"
       data-cursor="Visit"
       aria-label={`${project.title} — open live site`}
     >
-      <div className="wcard-media">
-        <video ref={video} src={project.video} poster={project.poster} muted loop playsInline preload="none" className="wcard-video" />
-        <div className="wcard-shine" />
-        <span className="wcard-domain">↗ {project.domain}</span>
+      <div className="proj-media">
+        <img
+          className="proj-img"
+          src={project.cover}
+          alt=""
+          width={1600}
+          height={1000}
+          loading={index < 2 ? "eager" : "lazy"}
+          decoding="async"
+        />
+        <span className="proj-cta" aria-hidden="true">
+          Visit site ↗
+        </span>
       </div>
-      <div className="wcard-info">
-        <span className="wcard-idx">{String(index + 1).padStart(2, "0")}</span>
-        <div className="wcard-text">
-          <h3 className="wcard-title">{project.title}</h3>
-          <p className="wcard-desc">{project.desc}</p>
-        </div>
-        <div className="wcard-meta">
-          <span>{project.category}</span>
-          <span>{project.year}</span>
-        </div>
+      <div className="proj-row">
+        <span className="proj-idx">{String(index + 1).padStart(2, "0")}</span>
+        <h3 className="proj-title">{project.title}</h3>
+        <span className="proj-arrow" aria-hidden="true">
+          ↗
+        </span>
+      </div>
+      <p className="proj-desc">{project.desc}</p>
+      <div className="proj-meta">
+        <span>{project.category}</span>
+        <span>{project.domain}</span>
+        <span>{project.year}</span>
       </div>
     </a>
-  );
-};
+  </li>
+);
 
+/**
+ * Project index: a staggered two-column wall of screenshot collages. Each
+ * cover bends up into place as it scrolls in, like a page being turned.
+ */
 const Work: React.FC = () => {
   const root = useRef<HTMLElement>(null);
-  const [current, setCurrent] = useState(1);
 
   useEffect(() => {
     const el = root.current;
-    if (!el) return;
-    const track = el.querySelector<HTMLElement>(".work-track")!;
-    const pin = el.querySelector<HTMLElement>(".work-pin")!;
-    const distance = () => track.scrollWidth - window.innerWidth;
-    let tween: gsap.core.Tween | undefined;
-
-    // Pinned horizontal reel at every width (phones included)
+    if (!el || prefersReducedMotion()) return;
     const ctx = gsap.context(() => {
-      tween = gsap.to(track, {
-        x: () => -distance(),
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".work-pin",
-          start: "top top",
-          end: () => `+=${distance()}`,
-          pin: true,
-          anticipatePin: 1,
-          scrub: 1,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            gsap.set(".work-progress-fill", { scaleX: self.progress });
-            setCurrent(Math.min(projects.length, Math.floor(self.progress * projects.length) + 1));
-          },
-        },
-      });
-      // Inner parallax: each video slides against its card as the track moves
-      gsap.utils.toArray<HTMLElement>(".wcard-video").forEach((v) => {
+      gsap.utils.toArray<HTMLElement>(".proj").forEach((card) => {
         gsap.fromTo(
-          v,
-          { xPercent: -8 },
+          card.querySelector(".proj-media"),
+          { rotateX: 28, yPercent: 14, scale: 0.94, opacity: 0.2 },
           {
-            xPercent: 8,
+            rotateX: 0,
+            yPercent: 0,
+            scale: 1,
+            opacity: 1,
             ease: "none",
-            scrollTrigger: { trigger: v.closest(".wcard"), containerAnimation: tween, start: "left right", end: "right left", scrub: true },
+            scrollTrigger: { trigger: card, start: "top 98%", end: "top 55%", scrub: 0.6 },
           }
         );
+        // The collage drifts inside its frame for a touch of depth
+        gsap.fromTo(
+          card.querySelector(".proj-img"),
+          { yPercent: -4 },
+          { yPercent: 4, ease: "none", scrollTrigger: { trigger: card, start: "top bottom", end: "bottom top", scrub: true } }
+        );
+        gsap.from(card.querySelectorAll(".proj-row, .proj-desc, .proj-meta"), {
+          y: 24,
+          opacity: 0,
+          duration: 1,
+          stagger: 0.08,
+          ease: "expo.out",
+          scrollTrigger: { trigger: card.querySelector(".proj-row"), start: "top 92%" },
+        });
       });
     }, el);
-
-    // Keyboard: the track only moves with vertical scroll, so tabbing to an
-    // off-screen card scrolls the page to the point in the pin that shows it
-    const onFocus = (e: FocusEvent) => {
-      const item = (e.target as HTMLElement).closest<HTMLElement>(".wcard, .work-end");
-      const st = tween?.scrollTrigger;
-      pin.scrollLeft = 0; // the browser may try to scroll the overflow:hidden pin itself
-      if (!item || !st) return;
-      const gutter = parseFloat(getComputedStyle(track).paddingLeft) || 0;
-      const progress = gsap.utils.clamp(0, 1, (item.offsetLeft - gutter) / distance());
-      scrollToY(st.start + progress * (st.end - st.start));
-    };
-    track.addEventListener("focusin", onFocus);
-
-    return () => {
-      track.removeEventListener("focusin", onFocus);
-      ctx.revert();
-    };
+    return () => ctx.revert();
   }, []);
 
   return (
-    <section id="work" ref={root} className="work" data-orb="-1.02 -0.05 0.55 0.45" data-orb-mobile="-1.15 0.55 0.35 0.3">
-      <div className="work-pin">
-        <div className="container work-head">
+    <section id="work" ref={root} className="section work" data-orb="-1.02 -0.05 0.55 0.45" data-orb-mobile="-1.15 0.55 0.35 0.3">
+      <div className="container">
+        <div className="work-head">
           <div>
             <Eyebrow index="(02)">Selected work</Eyebrow>
             <h2 className="display-lg" data-split>
               Shipped &amp; running <em className="serif-accent">in production</em>
             </h2>
           </div>
-          <div className="work-counter" aria-hidden="true">
-            <span className="work-counter-num">{String(current).padStart(2, "0")}</span>
-            <span className="work-counter-total">/ {String(projects.length).padStart(2, "0")}</span>
-          </div>
+          <p className="work-count">
+            <span className="work-count-num">{String(projects.length).padStart(2, "0")}</span> live projects
+          </p>
         </div>
 
-        <div className="work-track">
+        <ul className="work-grid">
           {projects.map((p, i) => (
-            <WorkCard key={p.title} project={p} index={i} />
+            <ProjectCard key={p.title} project={p} index={i} />
           ))}
-          <div className="work-end">
-            <p>Your product could be next.</p>
-            <a
-              href="#contact"
-              className="work-end-link"
-              data-cursor="Talk"
-              onClick={(e) => {
-                e.preventDefault();
-                scrollToId("contact");
-              }}
-            >
-              Start a project ↗
-            </a>
-          </div>
-        </div>
+        </ul>
 
-        <div className="container work-foot">
-          <div className="work-progress">
-            <div className="work-progress-fill" />
-          </div>
-          <span className="work-hint">Keep scrolling →</span>
+        <div className="work-end">
+          <p>Your product could be next.</p>
+          <a
+            href="#contact"
+            className="work-end-link"
+            data-cursor="Talk"
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToId("contact");
+            }}
+          >
+            Start a project ↗
+          </a>
         </div>
       </div>
     </section>
